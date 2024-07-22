@@ -19,7 +19,7 @@ namespace SourceGenerator
             {
                 FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
 
-                if(syntaxTree.FilePath.StartsWith(@"C:\Users\Acer\source\repos\CodeGenerationIvestigation\TestSandBox\obj\Debug\net8.0")) 
+                if(syntaxTree.FilePath.StartsWith(@"D:\Repos\CodeGenerationIvestigation\TestSandBox\obj\Debug\net8.0")) 
                 {
                     continue;
                 }
