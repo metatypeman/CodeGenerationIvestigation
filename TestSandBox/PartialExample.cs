@@ -10,5 +10,10 @@
         }
 
         private string _strField;
+
+        public void SomeTooSmartMethod()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
