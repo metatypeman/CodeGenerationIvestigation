@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSandBox", "TestSandBox\TestSandBox.csproj", "{5E9C3142-AC87-4E93-8AB0-4BFF95650EEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{4B34B818-ABC7-42AF-87A4-761F3ADF980A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E9C3142-AC87-4E93-8AB0-4BFF95650EEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E9C3142-AC87-4E93-8AB0-4BFF95650EEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E9C3142-AC87-4E93-8AB0-4BFF95650EEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E9C3142-AC87-4E93-8AB0-4BFF95650EEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B34B818-ABC7-42AF-87A4-761F3ADF980A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B34B818-ABC7-42AF-87A4-761F3ADF980A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B34B818-ABC7-42AF-87A4-761F3ADF980A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B34B818-ABC7-42AF-87A4-761F3ADF980A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E843067-AA89-401C-B9C6-1D93C9B4E765}
+	EndGlobalSection
+EndGlobal
