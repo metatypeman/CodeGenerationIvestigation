@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SourceGenerator
 {
@@ -31,15 +32,33 @@ namespace SourceGenerator
             FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
 #endif
 
-            var context = new CustomSerializationSearcherContext()
-            {
-                FilePath = syntaxTree.FilePath
-            };
-
             var root = syntaxTree.GetRoot();
 
             FileLogger.WriteLn($"root?.GetKind() = {root?.Kind()}");
             FileLogger.WriteLn($"root?.GetText() = {root?.GetText()}");
+
+            var childNodes = root?.ChildNodes();
+
+            if(childNodes == null)
+            {
+                return;
+            }
+
+            var namespaceDeclarations = childNodes.Where(p => p.IsKind(SyntaxKind.NamespaceDeclaration));
+
+#if DEBUG
+            FileLogger.WriteLn($"namespaceDeclarations.Count() = {namespaceDeclarations.Count()}");
+#endif
+
+            if(namespaceDeclarations.Count() == 0)
+            {
+                return;
+            }
+
+            var context = new CustomSerializationSearcherContext()
+            {
+                FilePath = syntaxTree.FilePath
+            };
 
 #if DEBUG
             FileLogger.WriteLn($"context = {context}");
