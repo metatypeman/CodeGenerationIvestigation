@@ -29,6 +29,14 @@ namespace SourceGenerator
                 ShowSyntaxNode(0, root);
             }
 
+            FileLogger.WriteLn("-----------------");
+
+            var searcher = new CustomSerializationSearcher(syntaxTrees);
+
+            var items = searcher.Run();
+
+            FileLogger.WriteLn($"items.Count = {items.Count}");
+
             // Code generation goes here
         }
 
