@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -121,6 +123,16 @@ namespace SourceGenerator
 #if DEBUG
             FileLogger.WriteLn($"classDeclaration?.GetKind() = {classDeclaration?.Kind()}");
             FileLogger.WriteLn($"classDeclaration?.GetText() = {classDeclaration?.GetText()}");
+#endif
+
+            var childNodes = classDeclaration?.ChildNodes();
+
+            //var attributesList = childNodes.Where(p => p.IsKind(SyntaxKind.AttributeList)).SelectMany(p => p.ChildNodes().Where(x => x.IsKind(SyntaxKind.Attribute)));
+
+            var cSharpClassDeclarationSyntax = (ClassDeclarationSyntax)classDeclaration;
+
+#if DEBUG
+            FileLogger.WriteLn($"cSharpClassDeclarationSyntax.Identifier = {cSharpClassDeclarationSyntax.Identifier}");
 #endif
         }
 

@@ -1,6 +1,7 @@
 ﻿namespace TestSandBox
 {
     [CustomSerialization]
+    [Obsolete]
     public partial class SomeClass
     {
         public OtherClass OtherClassProp { get; set; }
