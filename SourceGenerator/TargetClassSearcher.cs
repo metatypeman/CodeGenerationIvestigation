@@ -9,30 +9,43 @@ using System.Text;
 
 namespace SourceGenerator
 {
-    public class CustomSerializationSearcher
+    public class TargetClassSearcher
     {
-        public CustomSerializationSearcher(IEnumerable<SyntaxTree> syntaxTrees) 
+        public TargetClassSearcher(IEnumerable<SyntaxTree> syntaxTrees) 
         {
             _syntaxTrees = syntaxTrees;
         }
 
         private readonly IEnumerable<SyntaxTree> _syntaxTrees;
 
-        public List<CustomSerializationItem> Run()
+        public List<TargetClassItem> Run(string attributeName)
         {
-            var result = new List<CustomSerializationItem>();
+            return Run(new List<string> { attributeName });
+        }
 
-            var context = new CustomSerializationSearcherContext();
+        public List<TargetClassItem> Run(List<string> attributeNames)
+        {
+#if DEBUG
+            FileLogger.WriteLn($"attributeNames.Count = {attributeNames.Count}");
+            foreach (var attributeName in attributeNames)
+            {
+                FileLogger.WriteLn($"attributeName = {attributeName}");
+            }
+#endif
+
+            var result = new List<TargetClassItem>();
+
+            var context = new TargetClassSearcherContext();
 
             foreach (var syntaxTree in _syntaxTrees)
             {
-                ProcessSyntaxTree(syntaxTree, context, ref result);
+                ProcessSyntaxTree(syntaxTree, attributeNames, context, ref result);
             }
 
             return result;
         }
 
-        private void ProcessSyntaxTree(SyntaxTree syntaxTree, CustomSerializationSearcherContext context, ref List<CustomSerializationItem> result)
+        private void ProcessSyntaxTree(SyntaxTree syntaxTree, List<string> attributeNames, TargetClassSearcherContext context, ref List<TargetClassItem> result)
         {
 #if DEBUG
             FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
@@ -69,11 +82,11 @@ namespace SourceGenerator
 
             foreach (var namespaceDeclaration in namespaceDeclarations)
             {
-                ProcessNamespaceDeclaration(namespaceDeclaration, context, ref result);
+                ProcessNamespaceDeclaration(namespaceDeclaration, attributeNames, context, ref result);
             }
         }
 
-        private void ProcessNamespaceDeclaration(SyntaxNode namespaceDeclaration, CustomSerializationSearcherContext context, ref List<CustomSerializationItem> result)
+        private void ProcessNamespaceDeclaration(SyntaxNode namespaceDeclaration, List<string> attributeNames, TargetClassSearcherContext context, ref List<TargetClassItem> result)
         {
 #if DEBUG
             FileLogger.WriteLn($"namespaceDeclaration?.GetKind() = {namespaceDeclaration?.Kind()}");
@@ -114,11 +127,11 @@ namespace SourceGenerator
 
             foreach(var classDeclaration in classDeclarations)
             {
-                ProcessClassDeclaration(classDeclaration, context, ref result);
+                ProcessClassDeclaration(classDeclaration, attributeNames, context, ref result);
             }
         }
 
-        private void ProcessClassDeclaration(SyntaxNode classDeclaration, CustomSerializationSearcherContext context, ref List<CustomSerializationItem> result)
+        private void ProcessClassDeclaration(SyntaxNode classDeclaration, List<string> attributeNames, TargetClassSearcherContext context, ref List<TargetClassItem> result)
         {
 #if DEBUG
             FileLogger.WriteLn($"classDeclaration?.GetKind() = {classDeclaration?.Kind()}");
@@ -127,13 +140,44 @@ namespace SourceGenerator
 
             var childNodes = classDeclaration?.ChildNodes();
 
-            //var attributesList = childNodes.Where(p => p.IsKind(SyntaxKind.AttributeList)).SelectMany(p => p.ChildNodes().Where(x => x.IsKind(SyntaxKind.Attribute)));
+            var attributesList = childNodes
+                .Where(p => p.IsKind(SyntaxKind.AttributeList))
+                .SelectMany(p => p.ChildNodes().Where(x => x.IsKind(SyntaxKind.Attribute)).SelectMany(y => y.ChildNodes().Where(u => u.IsKind(SyntaxKind.IdentifierName))))
+                .Select(p => ToString(p.GetText()));
+
+#if DEBUG
+            FileLogger.WriteLn($"attributesList.Count() = {attributesList.Count()}");
+            foreach (var attribute in attributesList)
+            {
+                FileLogger.WriteLn($"attribute = '{attribute}'");
+                //ShowSyntaxNode(0, attribute);
+            }
+#endif
+
+            if(!attributesList.Any(p => attributeNames.Contains(p)))
+            {
+                return;
+            }
 
             var cSharpClassDeclarationSyntax = (ClassDeclarationSyntax)classDeclaration;
 
 #if DEBUG
             FileLogger.WriteLn($"cSharpClassDeclarationSyntax.Identifier = {cSharpClassDeclarationSyntax.Identifier}");
 #endif
+
+            var resultItem = new TargetClassItem
+            {
+                FilePath = context.FilePath,
+                Namespace = context.Namespace,
+                Identifier = cSharpClassDeclarationSyntax.Identifier.ToString(),
+                SyntaxNode = cSharpClassDeclarationSyntax
+            };
+
+#if DEBUG
+            FileLogger.WriteLn($"resultItem = {resultItem}");
+#endif
+
+            result.Add(resultItem);
         }
 
         private string ToString(SourceText sourceText)
@@ -150,6 +194,44 @@ namespace SourceGenerator
                 }
 
                 sb.Append(lineStr);
+            }
+
+            return sb.ToString();
+        }
+
+        private void ShowSyntaxNode(int n, SyntaxNode syntaxNode)
+        {
+            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.GetType().Name = {syntaxNode?.GetType().Name}");
+            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.Kind() = {syntaxNode?.Kind()}");
+            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.GetText() = {syntaxNode?.GetText()}");
+
+            var childNodes = syntaxNode?.ChildNodes();
+
+            FileLogger.WriteLn($"{Spaces(n)}childNodes = {childNodes == null}");
+
+            if (childNodes != null)
+            {
+                FileLogger.WriteLn($"{Spaces(n)}childNodes.Count() = {childNodes.Count()}");
+
+                foreach (var childNode in childNodes)
+                {
+                    ShowSyntaxNode(n + 4, childNode);
+                }
+            }
+        }
+
+        public static string Spaces(int n)
+        {
+            if (n == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            for (var i = 0; i < n; i++)
+            {
+                sb.Append(" ");
             }
 
             return sb.ToString();

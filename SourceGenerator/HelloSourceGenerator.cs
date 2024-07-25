@@ -31,9 +31,9 @@ namespace SourceGenerator
 
             FileLogger.WriteLn("-----------------");
 
-            var searcher = new CustomSerializationSearcher(syntaxTrees);
+            var searcher = new TargetClassSearcher(syntaxTrees);
 
-            var items = searcher.Run();
+            var items = searcher.Run("CustomSerialization");
 
             FileLogger.WriteLn($"items.Count = {items.Count}");
 

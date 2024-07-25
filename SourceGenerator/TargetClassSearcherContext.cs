@@ -2,7 +2,7 @@
 
 namespace SourceGenerator
 {
-    public class CustomSerializationItem
+    public class TargetClassSearcherContext
     {
         public string FilePath { get; set; }
         public string Namespace { get; set; }

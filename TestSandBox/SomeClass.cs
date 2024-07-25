@@ -1,7 +1,9 @@
-﻿namespace TestSandBox
+﻿using System.Text.Json.Serialization;
+
+namespace TestSandBox
 {
     [CustomSerialization]
-    [Obsolete]
+    [Obsolete("Hi!"), JsonSourceGenerationOptions(WriteIndented = true)]
     public partial class SomeClass
     {
         public OtherClass OtherClassProp { get; set; }
