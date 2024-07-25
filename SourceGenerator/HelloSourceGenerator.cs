@@ -37,6 +37,12 @@ namespace SourceGenerator
 
             FileLogger.WriteLn($"items.Count = {items.Count}");
 
+            foreach(var item in items)
+            {
+                FileLogger.WriteLn($"item = {item}");
+                ShowSyntaxNode(0, item.SyntaxNode);
+            }
+
             // Code generation goes here
         }
 
