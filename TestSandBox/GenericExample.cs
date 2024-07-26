@@ -1,6 +1,6 @@
 ﻿namespace TestSandBox
 {
-    [CustomSerialization]
+    [CustomSerializationExample]
     public partial class GenericExample<T>
     {
     }

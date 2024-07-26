@@ -19,11 +19,6 @@ namespace SourceGenerator
             {
                 FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
 
-                if(syntaxTree.FilePath.StartsWith(@"D:\Repos\CodeGenerationIvestigation\TestSandBox\obj\Debug\net8.0")) 
-                {
-                    continue;
-                }
-
                 var root = syntaxTree.GetRoot();
 
                 ShowSyntaxNode(0, root);
@@ -33,7 +28,7 @@ namespace SourceGenerator
 
             var searcher = new TargetClassSearcher(syntaxTrees);
 
-            var items = searcher.Run("CustomSerialization");
+            var items = searcher.Run("SocSerialization");
 
             FileLogger.WriteLn($"items.Count = {items.Count}");
 

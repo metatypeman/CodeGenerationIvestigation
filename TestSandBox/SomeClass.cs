@@ -2,7 +2,7 @@
 
 namespace TestSandBox
 {
-    [CustomSerialization]
+    [CustomSerializationExample]
     [Obsolete("Hi!"), JsonSourceGenerationOptions(WriteIndented = true)]
     public partial class SomeClass
     {
