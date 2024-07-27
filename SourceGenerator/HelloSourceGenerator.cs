@@ -57,31 +57,31 @@ namespace SourceGenerator
 
             FileLogger.WriteLn("||||||||||||||||||||||||||");
 
-            var fileName = @"\tmpFile.g.cs";
+//            var fileName = @"\tmpFile.g.cs";
 
-            if(pathsList.Any(p => p.EndsWith(fileName)))
-            {
-                var path = pathsList.First(p => p.EndsWith(fileName));
+//            if(pathsList.Any(p => p.EndsWith(fileName)))
+//            {
+//                var path = pathsList.First(p => p.EndsWith(fileName));
 
-                FileLogger.WriteLn($"path = {path}");
+//                FileLogger.WriteLn($"path = {path}");
 
-                var source = $@"
-public class tmpFile1223434325
-{{
-//Modified!!! {DateTime.Now}
-}}";
+//                var source = $@"
+//public class tmpFile1223434325
+//{{
+////Modified!!! {DateTime.Now}
+//}}";
 
-                File.WriteAllText(path, source, Encoding.UTF8);
-            }
-            else
-            {
-                var source = @"
-public class tmpFile1223434325
-{
-}";
+//                File.WriteAllText(path, source, Encoding.UTF8);
+//            }
+//            else
+//            {
+//                var source = @"
+//public class tmpFile1223434325
+//{
+//}";
 
-                context.AddSource("tmpFile.g.cs", SourceText.From(source, Encoding.UTF8));
-            }
+//                context.AddSource("tmpFile.g.cs", SourceText.From(source, Encoding.UTF8));
+//            }
 
             FileLogger.WriteLn("|---------------|");
         }
