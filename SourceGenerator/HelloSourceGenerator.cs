@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -15,7 +17,16 @@ namespace SourceGenerator
 
             var syntaxTrees = context.Compilation.SyntaxTrees;
 
-            foreach(var syntaxTree in syntaxTrees)
+            var pathsList = syntaxTrees.Select(t => t.FilePath).ToList();
+
+            FileLogger.WriteLn($"pathsList.Count = {pathsList.Count}");
+
+            foreach(var path in pathsList)
+            {
+                FileLogger.WriteLn($"path = '{path}'");
+            }
+
+            foreach (var syntaxTree in syntaxTrees)
             {
                 FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
 
@@ -32,22 +43,45 @@ namespace SourceGenerator
 
             FileLogger.WriteLn($"items.Count = {items.Count}");
 
-            foreach(var item in items)
+            var socSerializationGeneration = new SocSerializationGeneration(context);
+
+            foreach (var item in items)
             {
-                FileLogger.WriteLn($"item = {item}");
-                ShowSyntaxNode(0, item.SyntaxNode);
+                //FileLogger.WriteLn($"item = {item}");
+                //ShowSyntaxNode(0, item.SyntaxNode);
+
+                socSerializationGeneration.Run(item);
             }
 
             // Code generation goes here
 
             FileLogger.WriteLn("||||||||||||||||||||||||||");
 
-            var source = @"
+            var fileName = @"\tmpFile.g.cs";
+
+            if(pathsList.Any(p => p.EndsWith(fileName)))
+            {
+                var path = pathsList.First(p => p.EndsWith(fileName));
+
+                FileLogger.WriteLn($"path = {path}");
+
+                var source = $@"
+public class tmpFile1223434325
+{{
+//Modified!!! {DateTime.Now}
+}}";
+
+                File.WriteAllText(path, source, Encoding.UTF8);
+            }
+            else
+            {
+                var source = @"
 public class tmpFile1223434325
 {
 }";
 
-            context.AddSource("tmpFile.g.cs", source);
+                context.AddSource("tmpFile.g.cs", SourceText.From(source, Encoding.UTF8));
+            }
 
             FileLogger.WriteLn("|---------------|");
         }

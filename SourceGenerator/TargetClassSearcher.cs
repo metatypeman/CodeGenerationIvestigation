@@ -39,6 +39,11 @@ namespace SourceGenerator
 
             foreach (var syntaxTree in _syntaxTrees)
             {
+                if(syntaxTree.FilePath.EndsWith(".g.cs"))
+                {
+                    continue;
+                }
+
                 ProcessSyntaxTree(syntaxTree, attributeNames, context, ref result);
             }
 
