@@ -7,6 +7,11 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="NLog" Version="5.1.4" />
@@ -20,6 +25,10 @@
 	  <None Update="NLog.config">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Generated\SourceGenerator\SourceGenerator.HelloSourceGenerator\" />
 	</ItemGroup>
 	
 </Project>

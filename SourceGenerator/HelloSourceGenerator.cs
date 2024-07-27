@@ -39,6 +39,17 @@ namespace SourceGenerator
             }
 
             // Code generation goes here
+
+            FileLogger.WriteLn("||||||||||||||||||||||||||");
+
+            var source = @"
+public class tmpFile1223434325
+{
+}";
+
+            context.AddSource("tmpFile.g.cs", source);
+
+            FileLogger.WriteLn("|---------------|");
         }
 
         private void ShowSyntaxNode(int n, SyntaxNode syntaxNode)
