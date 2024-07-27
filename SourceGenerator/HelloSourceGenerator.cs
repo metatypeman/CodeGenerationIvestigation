@@ -17,23 +17,23 @@ namespace SourceGenerator
 
             var syntaxTrees = context.Compilation.SyntaxTrees;
 
-            var pathsList = syntaxTrees.Select(t => t.FilePath).ToList();
+            //var pathsList = syntaxTrees.Select(t => t.FilePath).ToList();
 
-            FileLogger.WriteLn($"pathsList.Count = {pathsList.Count}");
+            //FileLogger.WriteLn($"pathsList.Count = {pathsList.Count}");
 
-            foreach(var path in pathsList)
-            {
-                FileLogger.WriteLn($"path = '{path}'");
-            }
+            //foreach(var path in pathsList)
+            //{
+            //    FileLogger.WriteLn($"path = '{path}'");
+            //}
 
-            foreach (var syntaxTree in syntaxTrees)
-            {
-                FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
+            //foreach (var syntaxTree in syntaxTrees)
+            //{
+            //    FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
 
-                var root = syntaxTree.GetRoot();
+            //    var root = syntaxTree.GetRoot();
 
-                ShowSyntaxNode(0, root);
-            }
+            //    ShowSyntaxNode(0, root);
+            //}
 
             FileLogger.WriteLn("-----------------");
 

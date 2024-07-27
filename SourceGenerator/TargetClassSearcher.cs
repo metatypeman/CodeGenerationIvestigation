@@ -26,11 +26,11 @@ namespace SourceGenerator
         public List<TargetClassItem> Run(List<string> attributeNames)
         {
 #if DEBUG
-            FileLogger.WriteLn($"attributeNames.Count = {attributeNames.Count}");
-            foreach (var attributeName in attributeNames)
-            {
-                FileLogger.WriteLn($"attributeName = {attributeName}");
-            }
+            //FileLogger.WriteLn($"attributeNames.Count = {attributeNames.Count}");
+            //foreach (var attributeName in attributeNames)
+            //{
+            //    FileLogger.WriteLn($"attributeName = {attributeName}");
+            //}
 #endif
 
             var result = new List<TargetClassItem>();
@@ -53,13 +53,15 @@ namespace SourceGenerator
         private void ProcessSyntaxTree(SyntaxTree syntaxTree, List<string> attributeNames, TargetClassSearcherContext context, ref List<TargetClassItem> result)
         {
 #if DEBUG
-            FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
+            //FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
 #endif
 
             var root = syntaxTree.GetRoot();
 
-            FileLogger.WriteLn($"root?.GetKind() = {root?.Kind()}");
-            FileLogger.WriteLn($"root?.GetText() = {root?.GetText()}");
+#if DEBUG
+            //FileLogger.WriteLn($"root?.GetKind() = {root?.Kind()}");
+            //FileLogger.WriteLn($"root?.GetText() = {root?.GetText()}");
+#endif
 
             var childNodes = root?.ChildNodes();
 
@@ -71,7 +73,7 @@ namespace SourceGenerator
             var namespaceDeclarations = childNodes.Where(p => p.IsKind(SyntaxKind.NamespaceDeclaration));
 
 #if DEBUG
-            FileLogger.WriteLn($"namespaceDeclarations.Count() = {namespaceDeclarations.Count()}");
+            //FileLogger.WriteLn($"namespaceDeclarations.Count() = {namespaceDeclarations.Count()}");
 #endif
 
             if(namespaceDeclarations.Count() == 0)
@@ -82,7 +84,7 @@ namespace SourceGenerator
             context.FilePath = syntaxTree.FilePath;
 
 #if DEBUG
-            FileLogger.WriteLn($"context = {context}");
+            //FileLogger.WriteLn($"context = {context}");
 #endif
 
             foreach (var namespaceDeclaration in namespaceDeclarations)
@@ -94,8 +96,8 @@ namespace SourceGenerator
         private void ProcessNamespaceDeclaration(SyntaxNode namespaceDeclaration, List<string> attributeNames, TargetClassSearcherContext context, ref List<TargetClassItem> result)
         {
 #if DEBUG
-            FileLogger.WriteLn($"namespaceDeclaration?.GetKind() = {namespaceDeclaration?.Kind()}");
-            FileLogger.WriteLn($"namespaceDeclaration?.GetText() = {namespaceDeclaration?.GetText()}");
+            //FileLogger.WriteLn($"namespaceDeclaration?.GetKind() = {namespaceDeclaration?.Kind()}");
+            //FileLogger.WriteLn($"namespaceDeclaration?.GetText() = {namespaceDeclaration?.GetText()}");
 #endif
 
             var childNodes = namespaceDeclaration?.ChildNodes();
@@ -103,7 +105,7 @@ namespace SourceGenerator
             var classDeclarations = childNodes.Where(p => p.IsKind(SyntaxKind.ClassDeclaration));
 
 #if DEBUG
-            FileLogger.WriteLn($"classDeclarations.Count() = {classDeclarations.Count()}");
+            //FileLogger.WriteLn($"classDeclarations.Count() = {classDeclarations.Count()}");
 #endif
 
             if (classDeclarations.Count() == 0)
@@ -114,20 +116,20 @@ namespace SourceGenerator
             var namespaceIdentifierNode = childNodes.Single(p => p.IsKind(SyntaxKind.QualifiedName) || p.IsKind(SyntaxKind.IdentifierName));
 
 #if DEBUG
-            FileLogger.WriteLn($"namespaceIdentifierNode?.GetKind() = {namespaceIdentifierNode?.Kind()}");
-            FileLogger.WriteLn($"namespaceIdentifierNode?.GetText() = {namespaceIdentifierNode?.GetText()}");
+            //FileLogger.WriteLn($"namespaceIdentifierNode?.GetKind() = {namespaceIdentifierNode?.Kind()}");
+            //FileLogger.WriteLn($"namespaceIdentifierNode?.GetText() = {namespaceIdentifierNode?.GetText()}");
 #endif
 
             var namespaceIdentifier = ToString(namespaceIdentifierNode?.GetText());
 
 #if DEBUG
-            FileLogger.WriteLn($"namespaceIdentifier = '{namespaceIdentifier}'");
+            //FileLogger.WriteLn($"namespaceIdentifier = '{namespaceIdentifier}'");
 #endif
 
             context.Namespace = namespaceIdentifier;
 
 #if DEBUG
-            FileLogger.WriteLn($"context = {context}");
+            //FileLogger.WriteLn($"context = {context}");
 #endif
 
             foreach(var classDeclaration in classDeclarations)
@@ -139,8 +141,8 @@ namespace SourceGenerator
         private void ProcessClassDeclaration(SyntaxNode classDeclaration, List<string> attributeNames, TargetClassSearcherContext context, ref List<TargetClassItem> result)
         {
 #if DEBUG
-            FileLogger.WriteLn($"classDeclaration?.GetKind() = {classDeclaration?.Kind()}");
-            FileLogger.WriteLn($"classDeclaration?.GetText() = {classDeclaration?.GetText()}");
+            //FileLogger.WriteLn($"classDeclaration?.GetKind() = {classDeclaration?.Kind()}");
+            //FileLogger.WriteLn($"classDeclaration?.GetText() = {classDeclaration?.GetText()}");
 #endif
 
             var childNodes = classDeclaration?.ChildNodes();
@@ -151,12 +153,12 @@ namespace SourceGenerator
                 .Select(p => ToString(p.GetText()));
 
 #if DEBUG
-            FileLogger.WriteLn($"attributesList.Count() = {attributesList.Count()}");
-            foreach (var attribute in attributesList)
-            {
-                FileLogger.WriteLn($"attribute = '{attribute}'");
-                //ShowSyntaxNode(0, attribute);
-            }
+            //FileLogger.WriteLn($"attributesList.Count() = {attributesList.Count()}");
+            //foreach (var attribute in attributesList)
+            //{
+            //    FileLogger.WriteLn($"attribute = '{attribute}'");
+            //    //ShowSyntaxNode(0, attribute);
+            //}
 #endif
 
             if(!attributesList.Any(p => attributeNames.Contains(p)))
@@ -167,7 +169,7 @@ namespace SourceGenerator
             var cSharpClassDeclarationSyntax = (ClassDeclarationSyntax)classDeclaration;
 
 #if DEBUG
-            FileLogger.WriteLn($"cSharpClassDeclarationSyntax.Identifier = {cSharpClassDeclarationSyntax.Identifier}");
+            //FileLogger.WriteLn($"cSharpClassDeclarationSyntax.Identifier = {cSharpClassDeclarationSyntax.Identifier}");
 #endif
 
             var resultItem = new TargetClassItem
@@ -179,7 +181,7 @@ namespace SourceGenerator
             };
 
 #if DEBUG
-            FileLogger.WriteLn($"resultItem = {resultItem}");
+            //FileLogger.WriteLn($"resultItem = {resultItem}");
 #endif
 
             result.Add(resultItem);
