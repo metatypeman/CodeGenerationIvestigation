@@ -47,12 +47,32 @@ namespace SourceGenerator
             FileLogger.WriteLn($"sourceCodePlainObjectBuilder = {sourceCodePlainObjectBuilder}");
 
             var sourceCodeBuilder = new StringBuilder();
-
+            sourceCodeBuilder.AppendLine("using TestSandBox.Serialization;");
+            sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"namespace {targetClassItem.Namespace}");
             sourceCodeBuilder.AppendLine("{");
             sourceCodeBuilder.AppendLine($"{Spaces(classDeclIdentation)}public partial class {GetClassIdentifier(targetClassItem.SyntaxNode)}: ISerializable");
-            sourceCodeBuilder.AppendLine($"{Spaces(classDeclIdentation)}{{");//
+            sourceCodeBuilder.AppendLine($"{Spaces(classDeclIdentation)}{{");
             sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}Type ISerializable.GetPlainObjectType() => typeof({plainObjectClassName});");
+            sourceCodeBuilder.AppendLine();
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}OnWritePlainObject(({plainObjectClassName})plainObject, serializer);");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}}}");
+            sourceCodeBuilder.AppendLine();
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}void OnWritePlainObject({plainObjectClassName} plainObject, ISerializer serializer)");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}}}");
+            sourceCodeBuilder.AppendLine();
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}OnReadPlainObject(({plainObjectClassName})plainObject, deserializer);");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}}}");
+            sourceCodeBuilder.AppendLine();
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}void OnReadPlainObject({plainObjectClassName} plainObject, IDeserializer deserializer)");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}}}");
+            sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{Spaces(classDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine("}");
 
