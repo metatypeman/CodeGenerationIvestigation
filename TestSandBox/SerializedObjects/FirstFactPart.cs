@@ -12,7 +12,12 @@
         public int IntField;
 
         public string StringProp { get; set; }
+        public string StringField;
+
         public object ObjectProp { get; set; }
+        public object ObjectField;
         public List<string> ListStrProp { get; set; }
+        public List<string> ListStrField;
+
     }
 }

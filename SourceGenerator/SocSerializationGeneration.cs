@@ -219,7 +219,7 @@ namespace SourceGenerator
             var fieldsDeclarationList = syntaxNode.ChildNodes()?.Where(p => p.IsKind(SyntaxKind.FieldDeclaration)) ?? new List<SyntaxNode>();
 
 #if DEBUG
-            FileLogger.WriteLn($"fieldsDeclarationList.Count() = {fieldsDeclarationList.Count()}");
+            //FileLogger.WriteLn($"fieldsDeclarationList.Count() = {fieldsDeclarationList.Count()}");
 #endif
 
             if (fieldsDeclarationList.Count() == 0)
@@ -230,8 +230,26 @@ namespace SourceGenerator
             foreach(var fieldDeclaration in fieldsDeclarationList)
             {
 #if DEBUG
-                GeneratorsHelper.ShowSyntaxNode(0, fieldDeclaration);
+                //GeneratorsHelper.ShowSyntaxNode(0, fieldDeclaration);
 #endif
+
+                var fieldDeclarationSyntax = (FieldDeclarationSyntax)fieldDeclaration;
+
+                var item = new FieldItem()
+                {
+                    ClassDeclarationSyntaxNode = syntaxNode,
+                    SyntaxNode = fieldDeclarationSyntax
+                };
+
+                var variableDeclaration = fieldDeclaration.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclaration));
+
+                FillUpBaseFieldItem(variableDeclaration, item);
+
+#if DEBUG
+                //FileLogger.WriteLn($"item = {item}");
+#endif
+
+                result.Add(item);
             }
 
             return result;
@@ -240,13 +258,13 @@ namespace SourceGenerator
         private void FillUpBaseFieldItem(SyntaxNode syntaxNode, BaseFieldItem baseFieldItem)
         {
 #if DEBUG
-            GeneratorsHelper.ShowSyntaxNode(0, syntaxNode);
+            //GeneratorsHelper.ShowSyntaxNode(0, syntaxNode);
 #endif
 
             var predefinedType = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.PredefinedType));
 
 #if DEBUG
-            FileLogger.WriteLn($"predefinedType == null = {predefinedType == null}");
+            //FileLogger.WriteLn($"predefinedType == null = {predefinedType == null}");
 #endif
 
             if (predefinedType == null)
@@ -254,7 +272,7 @@ namespace SourceGenerator
                 var identifierName = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.IdentifierName));
 
 #if DEBUG
-                FileLogger.WriteLn($"identifierName == null = {identifierName == null}");
+                //FileLogger.WriteLn($"identifierName == null = {identifierName == null}");
 #endif
 
                 if (identifierName == null)
@@ -262,17 +280,21 @@ namespace SourceGenerator
                     var genericName = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.GenericName));
 
 #if DEBUG
-                    FileLogger.WriteLn($"genericName == null = {genericName == null}");
+                    //FileLogger.WriteLn($"genericName == null = {genericName == null}");
 #endif
 
                     if(genericName == null)
                     {
+#if DEBUG
+                        FileLogger.WriteLn($"throw new NotImplementedException()");
+#endif
+
                         throw new NotImplementedException();
                     }
                     else
                     {
 #if DEBUG
-                        GeneratorsHelper.ShowSyntaxNode(0, genericName);
+                        //GeneratorsHelper.ShowSyntaxNode(0, genericName);
 #endif
 
                         baseFieldItem.FieldTypeSyntaxNode = genericName;
@@ -282,7 +304,7 @@ namespace SourceGenerator
                 else
                 {
 #if DEBUG
-                    GeneratorsHelper.ShowSyntaxNode(0, identifierName);
+                    //GeneratorsHelper.ShowSyntaxNode(0, identifierName);
 #endif
 
                     baseFieldItem.FieldTypeSyntaxNode = identifierName;
@@ -292,7 +314,7 @@ namespace SourceGenerator
             else
             {
 #if DEBUG
-                GeneratorsHelper.ShowSyntaxNode(0, predefinedType);
+                //GeneratorsHelper.ShowSyntaxNode(0, predefinedType);
 #endif
 
                 baseFieldItem.FieldTypeSyntaxNode = predefinedType;
@@ -300,8 +322,8 @@ namespace SourceGenerator
                 var typeName = GeneratorsHelper.ToString(predefinedType.GetText());
 
 #if DEBUG
-                FileLogger.WriteLn($"typeName = '{typeName}'");
-                FileLogger.WriteLn($"typeName == \"object\" = {typeName == "object"}");
+                //FileLogger.WriteLn($"typeName = '{typeName}'");
+                //FileLogger.WriteLn($"typeName == \"object\" = {typeName == "object"}");
 #endif
 
                 if(typeName == "object")

@@ -5,7 +5,6 @@ namespace SourceGenerator
 {
     public class PropertyItem: BaseFieldItem
     {
-        public ClassDeclarationSyntax ClassDeclarationSyntaxNode { get; set; }
         public PropertyDeclarationSyntax SyntaxNode { get; set; }
 
         public override string ToString()
