@@ -8,19 +8,19 @@ namespace TestSandBox.SerializedObjects
 
         void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
         {
-        OnWritePlainObject((FirstFactPartPo)plainObject, serializer);
+            OnWritePlainObject((FirstFactPartPo)plainObject, serializer);
         }
 
-        void OnWritePlainObject(FirstFactPartPo plainObject, ISerializer serializer)
+        private void OnWritePlainObject(FirstFactPartPo plainObject, ISerializer serializer)
         {
         }
 
         void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
         {
-        OnReadPlainObject((FirstFactPartPo)plainObject, deserializer);
+            OnReadPlainObject((FirstFactPartPo)plainObject, deserializer);
         }
 
-        void OnReadPlainObject(FirstFactPartPo plainObject, IDeserializer deserializer)
+        private void OnReadPlainObject(FirstFactPartPo plainObject, IDeserializer deserializer)
         {
         }
 
