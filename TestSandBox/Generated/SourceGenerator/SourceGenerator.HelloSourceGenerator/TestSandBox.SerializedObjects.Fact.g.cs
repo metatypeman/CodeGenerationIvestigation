@@ -13,6 +13,7 @@ namespace TestSandBox.SerializedObjects
 
         private void OnWritePlainObject(FactPo plainObject, ISerializer serializer)
         {
+            plainObject.FactPart = serializer.GetSerializedObjectPtr(FactPart);
         }
 
         void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
@@ -22,6 +23,7 @@ namespace TestSandBox.SerializedObjects
 
         private void OnReadPlainObject(FactPo plainObject, IDeserializer deserializer)
         {
+            
         }
 
     }

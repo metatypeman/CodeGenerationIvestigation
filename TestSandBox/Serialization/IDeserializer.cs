@@ -7,5 +7,7 @@
 
         T GetDeserializedObject<T>(ObjectPtr objectPtr)
             where T : ISerializable, new();
+
+        object GetDeserializedObject(ObjectPtr objectPtr);
     }
 }

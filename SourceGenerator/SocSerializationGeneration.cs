@@ -114,11 +114,11 @@ namespace SourceGenerator
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
             foreach (var propertyItem in propertyItems)
             {
-
+                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateWriteProperty(propertyItem)}");
             }
             foreach (var fieldItem in fieldsItems)
             {
-
+                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateWriteField(fieldItem)}");
             }
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine();
@@ -131,11 +131,11 @@ namespace SourceGenerator
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
             foreach (var propertyItem in propertyItems)
             {
-
+                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateReadProperty(propertyItem)}");
             }
             foreach (var fieldItem in fieldsItems)
             {
-
+                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateReadField(fieldItem)}");
             }
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine();
@@ -431,6 +431,71 @@ namespace SourceGenerator
                     baseFieldItem.KindFieldType = KindFieldType.PredefinedType;
                 }
             }
+        }
+
+        private string CreateWriteProperty(PropertyItem propertyItem)
+        {
+            var propertyIdentifier = GetPropertyIdentifier(propertyItem);
+
+            var sb = new StringBuilder("plainObject.");
+            sb.Append(propertyIdentifier);
+            sb.Append(" = ");
+            switch(propertyItem.KindFieldType)
+            {
+                case KindFieldType.PredefinedType:
+                    sb.Append(propertyIdentifier);
+                    break;
+
+                case KindFieldType.Identifier:
+                    sb.Append($"serializer.GetSerializedObjectPtr({propertyIdentifier})");
+                    break;
+
+                default:
+                    sb.Append($"serializer.GetSerializedObjectPtrFromObject({propertyIdentifier})");
+                    break;
+            }
+            sb.Append(";");
+
+            return sb.ToString();
+        }
+
+        private string CreateWriteField(FieldItem fieldItem)
+        {
+            var fieldIndentifier = GetFieldIdentifier(fieldItem);
+
+            var sb = new StringBuilder("plainObject.");
+            sb.Append(fieldIndentifier);
+            sb.Append(" = ");
+            switch (fieldItem.KindFieldType)
+            {
+                case KindFieldType.PredefinedType:
+                    sb.Append(fieldIndentifier);
+                    break;
+
+                case KindFieldType.Identifier:
+                    sb.Append($"serializer.GetSerializedObjectPtr({fieldIndentifier})");
+                    break;
+
+                default:
+                    sb.Append($"serializer.GetSerializedObjectPtrFromObject({fieldIndentifier})");
+                    break;
+            }
+            sb.Append(";");
+            return sb.ToString();
+        }
+
+        private string CreateReadProperty(PropertyItem propertyItem)
+        {
+            var sb = new StringBuilder();
+
+            return sb.ToString();
+        }
+
+        private string CreateReadField(FieldItem fieldItem)
+        {
+            var sb = new StringBuilder();
+
+            return sb.ToString();
         }
 
         private void SaveFile(string source, string fileName)

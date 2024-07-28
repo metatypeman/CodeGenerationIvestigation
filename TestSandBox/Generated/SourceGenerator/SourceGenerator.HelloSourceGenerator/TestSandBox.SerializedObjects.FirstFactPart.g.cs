@@ -13,6 +13,15 @@ namespace TestSandBox.SerializedObjects
 
         private void OnWritePlainObject(FirstFactPartPo plainObject, ISerializer serializer)
         {
+            plainObject.IntProp = IntProp;
+            plainObject.StringProp = StringProp;
+            plainObject.ObjectProp = serializer.GetSerializedObjectPtrFromObject(ObjectProp);
+            plainObject.ListStrProp = serializer.GetSerializedObjectPtrFromObject(ListStrProp);
+            plainObject._parent = serializer.GetSerializedObjectPtr(_parent);
+            plainObject.IntField = IntField;
+            plainObject.StringField = StringField;
+            plainObject.ObjectField = serializer.GetSerializedObjectPtrFromObject(ObjectField);
+            plainObject.ListStrField = serializer.GetSerializedObjectPtrFromObject(ListStrField);
         }
 
         void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
@@ -22,6 +31,15 @@ namespace TestSandBox.SerializedObjects
 
         private void OnReadPlainObject(FirstFactPartPo plainObject, IDeserializer deserializer)
         {
+            
+            
+            
+            
+            
+            
+            
+            
+            
         }
 
     }
