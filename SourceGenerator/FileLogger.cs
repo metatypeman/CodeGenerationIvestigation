@@ -17,7 +17,7 @@ namespace SourceGenerator
 
         public static void WriteLn(string text)
         {
-            //File.AppendAllLines(_fileName, new List<string> { text});
+            File.AppendAllLines(_fileName, new List<string> { text});
         }
     }
 }

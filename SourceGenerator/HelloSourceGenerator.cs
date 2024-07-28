@@ -86,47 +86,9 @@ namespace SourceGenerator
             FileLogger.WriteLn("|---------------|");
         }
 
-        private void ShowSyntaxNode(int n, SyntaxNode syntaxNode)
-        {
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.GetType().Name = {syntaxNode?.GetType().Name}");
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.Kind() = {syntaxNode?.Kind()}");
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.GetText() = {syntaxNode?.GetText()}");
-
-            var childNodes = syntaxNode?.ChildNodes();
-
-            FileLogger.WriteLn($"{Spaces(n)}childNodes = {childNodes == null}");
-
-            if (childNodes != null)
-            {
-                FileLogger.WriteLn($"{Spaces(n)}childNodes.Count() = {childNodes.Count()}");
-
-                foreach (var childNode in childNodes)
-                {
-                    ShowSyntaxNode(n + 4, childNode);
-                }
-            }
-        }
-
         public void Initialize(GeneratorInitializationContext context)
         {
             // No initialization required for this one
-        }
-
-        public static string Spaces(int n)
-        {
-            if (n == 0)
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-
-            for (var i = 0; i < n; i++)
-            {
-                sb.Append(" ");
-            }
-
-            return sb.ToString();
         }
     }
 }

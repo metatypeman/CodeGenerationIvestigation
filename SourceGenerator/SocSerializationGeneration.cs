@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,9 +23,10 @@ namespace SourceGenerator
 
         public void Run(TargetClassItem targetClassItem)
         {
+#if DEBUG
             FileLogger.WriteLn($"targetClassItem = {targetClassItem}");
-
-            ShowSyntaxNode(0, targetClassItem.SyntaxNode);
+            //ShowSyntaxNode(0, targetClassItem.SyntaxNode);
+#endif
 
             var identationStep = 4;
             var baseIdentation = 0;
@@ -33,60 +35,76 @@ namespace SourceGenerator
 
             var plainObjectClassName = GetPlainObjectClassIdentifier(targetClassItem.SyntaxNode);
 
+#if DEBUG
             FileLogger.WriteLn($"plainObjectClassName = {plainObjectClassName}");
+#endif
+
+            var propertyItems = GetPropertyItems(targetClassItem.SyntaxNode);
+
+#if DEBUG
+            FileLogger.WriteLn($"propertyItems.Count = {propertyItems.Count}");
+#endif
 
             var sourceCodePlainObjectBuilder = new StringBuilder();
 
             sourceCodePlainObjectBuilder.AppendLine($"namespace {targetClassItem.Namespace}");
             sourceCodePlainObjectBuilder.AppendLine("{");
-            sourceCodePlainObjectBuilder.AppendLine($"{Spaces(classDeclIdentation)}public partial class {plainObjectClassName}");
-            sourceCodePlainObjectBuilder.AppendLine($"{Spaces(classDeclIdentation)}{{");
-            sourceCodePlainObjectBuilder.AppendLine($"{Spaces(classDeclIdentation)}}}");
+            sourceCodePlainObjectBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}public partial class {plainObjectClassName}");
+            sourceCodePlainObjectBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}{{");
+            sourceCodePlainObjectBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}}}");
             sourceCodePlainObjectBuilder.AppendLine("}");
 
+#if DEBUG
             FileLogger.WriteLn($"sourceCodePlainObjectBuilder = {sourceCodePlainObjectBuilder}");
+#endif
 
             var sourceCodeBuilder = new StringBuilder();
             sourceCodeBuilder.AppendLine("using TestSandBox.Serialization;");
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"namespace {targetClassItem.Namespace}");
             sourceCodeBuilder.AppendLine("{");
-            sourceCodeBuilder.AppendLine($"{Spaces(classDeclIdentation)}public partial class {GetClassIdentifier(targetClassItem.SyntaxNode)}: ISerializable");
-            sourceCodeBuilder.AppendLine($"{Spaces(classDeclIdentation)}{{");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}Type ISerializable.GetPlainObjectType() => typeof({plainObjectClassName});");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}public partial class {GetClassIdentifier(targetClassItem.SyntaxNode)}: ISerializable");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}Type ISerializable.GetPlainObjectType() => typeof({plainObjectClassName});");
             sourceCodeBuilder.AppendLine();
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}{{");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}OnWritePlainObject(({plainObjectClassName})plainObject, serializer);");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}}}");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}OnWritePlainObject(({plainObjectClassName})plainObject, serializer);");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}}}");
             sourceCodeBuilder.AppendLine();
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}void OnWritePlainObject({plainObjectClassName} plainObject, ISerializer serializer)");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}{{");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}}}");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}void OnWritePlainObject({plainObjectClassName} plainObject, ISerializer serializer)");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}}}");
             sourceCodeBuilder.AppendLine();
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}{{");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}OnReadPlainObject(({plainObjectClassName})plainObject, deserializer);");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}}}");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}OnReadPlainObject(({plainObjectClassName})plainObject, deserializer);");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}}}");
             sourceCodeBuilder.AppendLine();
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}void OnReadPlainObject({plainObjectClassName} plainObject, IDeserializer deserializer)");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}{{");
-            sourceCodeBuilder.AppendLine($"{Spaces(classContentIdentation)}}}");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}void OnReadPlainObject({plainObjectClassName} plainObject, IDeserializer deserializer)");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{{");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}}}");
             sourceCodeBuilder.AppendLine();
-            sourceCodeBuilder.AppendLine($"{Spaces(classDeclIdentation)}}}");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine("}");
 
+#if DEBUG
             FileLogger.WriteLn($"sourceCodeBuilder = {sourceCodeBuilder}");
+#endif
 
             var fileName = $"{targetClassItem.Namespace}.{targetClassItem.Identifier}.g.cs";
 
+#if DEBUG
             FileLogger.WriteLn($"fileName = {fileName}");
+#endif
 
             SaveFile(sourceCodeBuilder.ToString(), fileName);
 
             var plainObjectFileName = $"{targetClassItem.Namespace}.{targetClassItem.Identifier}Po.g.cs";
 
+#if DEBUG
             FileLogger.WriteLn($"plainObjectFileName = {plainObjectFileName}");
+#endif
 
             SaveFile(sourceCodePlainObjectBuilder.ToString(), plainObjectFileName);
         }
@@ -105,17 +123,189 @@ namespace SourceGenerator
             return sb.ToString();
         }
 
+        private List<PropertyItem> GetPropertyItems(ClassDeclarationSyntax syntaxNode)
+        {
+            var result = new List<PropertyItem>();
+
+            var propertiesDeclarationsList = syntaxNode.ChildNodes()?.Where(p => p.IsKind(SyntaxKind.PropertyDeclaration) && IsSerializedProperty(p)) ?? new List<SyntaxNode>();
+
+#if DEBUG
+            FileLogger.WriteLn($"propertiesDeclarationsList.Count() = {propertiesDeclarationsList.Count()}");
+#endif
+
+            if(propertiesDeclarationsList.Count() == 0)
+            {
+                return result;
+            }
+
+            foreach(var propertyDeclaration in propertiesDeclarationsList)
+            {
+#if DEBUG
+                GeneratorsHelper.ShowSyntaxNode(0, propertyDeclaration);
+#endif
+
+                var propertyDeclarationSyntax = (PropertyDeclarationSyntax)propertyDeclaration;
+
+                var item = new PropertyItem()
+                {
+                    ClassDeclarationSyntaxNode = syntaxNode,
+                    SyntaxNode = propertyDeclarationSyntax
+                };
+
+                FillUpBaseFieldItem(propertyDeclaration, item);
+
+#if DEBUG
+                FileLogger.WriteLn($"item = {item}");
+#endif
+
+                result.Add(item);
+            }
+
+            return result;
+        }
+
+        private static bool IsSerializedProperty(SyntaxNode propertyDeclarationNode)
+        {
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, propertyDeclarationNode);
+#endif
+
+            var accessorList = propertyDeclarationNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.AccessorList));
+
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, accessorList);
+#endif
+
+            if (accessorList == null)
+            {
+                return false;
+            }
+
+            var getAccessorDeclaration = accessorList.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.GetAccessorDeclaration));
+
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, getAccessorDeclaration);
+#endif
+
+            if ((getAccessorDeclaration?.ChildNodes()?.Count() ?? 0) > 0)
+            {
+                return false;
+            }
+
+            var setAccessorDeclaration = accessorList.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.SetAccessorDeclaration));
+
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, setAccessorDeclaration);
+#endif
+
+            if ((setAccessorDeclaration?.ChildNodes()?.Count() ?? 0) > 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private List<FieldItem> GetFieldItems(ClassDeclarationSyntax syntaxNode)
+        {
+            var result = new List<FieldItem>();
+
+            return result;
+        }
+
+        private void FillUpBaseFieldItem(SyntaxNode syntaxNode, BaseFieldItem baseFieldItem)
+        {
+#if DEBUG
+            GeneratorsHelper.ShowSyntaxNode(0, syntaxNode);
+#endif
+
+            var predefinedType = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.PredefinedType));
+
+#if DEBUG
+            FileLogger.WriteLn($"predefinedType == null = {predefinedType == null}");
+#endif
+
+            if (predefinedType == null)
+            {
+                var identifierName = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.IdentifierName));
+
+#if DEBUG
+                FileLogger.WriteLn($"identifierName == null = {identifierName == null}");
+#endif
+
+                if (identifierName == null)
+                {
+                    var genericName = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.GenericName));
+
+#if DEBUG
+                    FileLogger.WriteLn($"genericName == null = {genericName == null}");
+#endif
+
+                    if(genericName == null)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+#if DEBUG
+                        GeneratorsHelper.ShowSyntaxNode(0, genericName);
+#endif
+
+                        baseFieldItem.FieldTypeSyntaxNode = genericName;
+                        baseFieldItem.KindFieldType = KindFieldType.GenericType;
+                    }
+                }
+                else
+                {
+#if DEBUG
+                    GeneratorsHelper.ShowSyntaxNode(0, identifierName);
+#endif
+
+                    baseFieldItem.FieldTypeSyntaxNode = identifierName;
+                    baseFieldItem.KindFieldType = KindFieldType.Identifier;
+                }
+            }
+            else
+            {
+#if DEBUG
+                GeneratorsHelper.ShowSyntaxNode(0, predefinedType);
+#endif
+
+                baseFieldItem.FieldTypeSyntaxNode = predefinedType;
+
+                var typeName = GeneratorsHelper.ToString(predefinedType.GetText());
+
+#if DEBUG
+                FileLogger.WriteLn($"typeName = '{typeName}'");
+                FileLogger.WriteLn($"typeName == \"object\" = {typeName == "object"}");
+#endif
+
+                if(typeName == "object")
+                {
+                    baseFieldItem.KindFieldType = KindFieldType.Object;
+                }
+                else
+                {
+                    baseFieldItem.KindFieldType = KindFieldType.PredefinedType;
+                }
+            }
+        }
+
         private void SaveFile(string source, string fileName)
         {
             var fileNameForSearch = $"\\{fileName}";
 
+#if DEBUG
             FileLogger.WriteLn($"fileNameForSearch = {fileNameForSearch}");
+#endif
 
             if (_pathsList.Any(p => p.EndsWith(fileNameForSearch)))
             {
                 var path = _pathsList.First(p => p.EndsWith(fileNameForSearch));
 
+#if DEBUG
                 FileLogger.WriteLn($"path = {path}");
+#endif
 
                 File.WriteAllText(path, source, Encoding.UTF8);
             }
@@ -125,42 +315,8 @@ namespace SourceGenerator
             }
         }
 
-        private void ShowSyntaxNode(int n, SyntaxNode syntaxNode)
-        {
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.GetType().Name = {syntaxNode?.GetType().Name}");
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.Kind() = {syntaxNode?.Kind()}");
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.GetText() = {syntaxNode?.GetText()}");
+#if DEBUG
 
-            var childNodes = syntaxNode?.ChildNodes();
-
-            FileLogger.WriteLn($"{Spaces(n)}childNodes = {childNodes == null}");
-
-            if (childNodes != null)
-            {
-                FileLogger.WriteLn($"{Spaces(n)}childNodes.Count() = {childNodes.Count()}");
-
-                foreach (var childNode in childNodes)
-                {
-                    ShowSyntaxNode(n + 4, childNode);
-                }
-            }
-        }
-
-        public static string Spaces(int n)
-        {
-            if (n == 0)
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-
-            for (var i = 0; i < n; i++)
-            {
-                sb.Append(" ");
-            }
-
-            return sb.ToString();
-        }
+#endif
     }
 }

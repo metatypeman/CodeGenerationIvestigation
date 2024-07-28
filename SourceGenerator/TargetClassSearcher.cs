@@ -120,7 +120,7 @@ namespace SourceGenerator
             //FileLogger.WriteLn($"namespaceIdentifierNode?.GetText() = {namespaceIdentifierNode?.GetText()}");
 #endif
 
-            var namespaceIdentifier = ToString(namespaceIdentifierNode?.GetText());
+            var namespaceIdentifier = GeneratorsHelper.ToString(namespaceIdentifierNode?.GetText());
 
 #if DEBUG
             //FileLogger.WriteLn($"namespaceIdentifier = '{namespaceIdentifier}'");
@@ -150,7 +150,7 @@ namespace SourceGenerator
             var attributesList = childNodes
                 .Where(p => p.IsKind(SyntaxKind.AttributeList))
                 .SelectMany(p => p.ChildNodes().Where(x => x.IsKind(SyntaxKind.Attribute)).SelectMany(y => y.ChildNodes().Where(u => u.IsKind(SyntaxKind.IdentifierName))))
-                .Select(p => ToString(p.GetText()));
+                .Select(p => GeneratorsHelper.ToString(p.GetText()));
 
 #if DEBUG
             //FileLogger.WriteLn($"attributesList.Count() = {attributesList.Count()}");
@@ -185,63 +185,6 @@ namespace SourceGenerator
 #endif
 
             result.Add(resultItem);
-        }
-
-        private string ToString(SourceText sourceText)
-        {
-            var sb = new StringBuilder();
-
-            foreach (var line in sourceText.Lines)
-            { 
-                var lineStr = line.ToString();
-
-                if(string.IsNullOrWhiteSpace(lineStr))
-                {
-                    continue;
-                }
-
-                sb.Append(lineStr);
-            }
-
-            return sb.ToString();
-        }
-
-        private void ShowSyntaxNode(int n, SyntaxNode syntaxNode)
-        {
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.GetType().Name = {syntaxNode?.GetType().Name}");
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.Kind() = {syntaxNode?.Kind()}");
-            FileLogger.WriteLn($"{Spaces(n)}syntaxNode?.GetText() = {syntaxNode?.GetText()}");
-
-            var childNodes = syntaxNode?.ChildNodes();
-
-            FileLogger.WriteLn($"{Spaces(n)}childNodes = {childNodes == null}");
-
-            if (childNodes != null)
-            {
-                FileLogger.WriteLn($"{Spaces(n)}childNodes.Count() = {childNodes.Count()}");
-
-                foreach (var childNode in childNodes)
-                {
-                    ShowSyntaxNode(n + 4, childNode);
-                }
-            }
-        }
-
-        public static string Spaces(int n)
-        {
-            if (n == 0)
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-
-            for (var i = 0; i < n; i++)
-            {
-                sb.Append(" ");
-            }
-
-            return sb.ToString();
         }
     }
 }
