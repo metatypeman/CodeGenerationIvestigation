@@ -25,7 +25,7 @@ namespace SourceGenerator
         {
 #if DEBUG
             FileLogger.WriteLn($"targetClassItem = {targetClassItem}");
-            //ShowSyntaxNode(0, targetClassItem.SyntaxNode);
+            //GeneratorsHelper.ShowSyntaxNode(0, targetClassItem.SyntaxNode);
 #endif
 
             var identationStep = 4;
@@ -52,11 +52,34 @@ namespace SourceGenerator
 #endif
 
             var sourceCodePlainObjectBuilder = new StringBuilder();
-
+            sourceCodePlainObjectBuilder.AppendLine("using TestSandBox.Serialization;");
+            sourceCodePlainObjectBuilder.AppendLine();
             sourceCodePlainObjectBuilder.AppendLine($"namespace {targetClassItem.Namespace}");
             sourceCodePlainObjectBuilder.AppendLine("{");
             sourceCodePlainObjectBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}public partial class {plainObjectClassName}");
             sourceCodePlainObjectBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}{{");
+            foreach (var propertyItem in propertyItems) 
+            {
+#if DEBUG
+                FileLogger.WriteLn($"propertyItem = {propertyItem}");
+                GeneratorsHelper.ShowSyntaxNode(0, propertyItem.SyntaxNode);
+#endif
+
+                var identifier = GetPropertyIdentifier(propertyItem);
+
+#if DEBUG
+                FileLogger.WriteLn($"identifier = '{identifier}'");
+#endif
+
+                sourceCodePlainObjectBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}public {GetPlainObjectMemberType(propertyItem)} {GetPropertyIdentifier(propertyItem)} {{ get; set; }}");
+            }
+            foreach (var fieldItem in fieldsItems) 
+            {
+#if DEBUG
+                FileLogger.WriteLn($"fieldItem = {fieldItem}");
+                GeneratorsHelper.ShowSyntaxNode(0, fieldItem.SyntaxNode);
+#endif
+            }
             sourceCodePlainObjectBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}}}");
             sourceCodePlainObjectBuilder.AppendLine("}");
 
@@ -80,6 +103,14 @@ namespace SourceGenerator
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}void OnWritePlainObject({plainObjectClassName} plainObject, ISerializer serializer)");
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{{");
+            foreach (var propertyItem in propertyItems)
+            {
+
+            }
+            foreach (var fieldItem in fieldsItems)
+            {
+
+            }
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}}}");
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)");
@@ -89,6 +120,14 @@ namespace SourceGenerator
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}void OnReadPlainObject({plainObjectClassName} plainObject, IDeserializer deserializer)");
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{{");
+            foreach (var propertyItem in propertyItems)
+            {
+
+            }
+            foreach (var fieldItem in fieldsItems)
+            {
+
+            }
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}}}");
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}}}");
@@ -115,6 +154,18 @@ namespace SourceGenerator
             SaveFile(sourceCodePlainObjectBuilder.ToString(), plainObjectFileName);
         }
 
+        private string GetPlainObjectMemberType(BaseFieldItem baseFieldItem)
+        {
+            if(baseFieldItem.KindFieldType == KindFieldType.PredefinedType)
+            {
+                return "hz";
+            }
+            else
+            {
+                return "ObjectPtr";
+            }
+        }
+
         private string GetClassIdentifier(ClassDeclarationSyntax syntaxNode)
         {
             var sb = new StringBuilder(syntaxNode.Identifier.Text);
@@ -127,6 +178,16 @@ namespace SourceGenerator
             var sb = new StringBuilder(syntaxNode.Identifier.Text);
             sb.Append("Po");
             return sb.ToString();
+        }
+
+        private string GetPropertyIdentifier(PropertyItem propertyItem)
+        {
+            return GetPropertyIdentifier(propertyItem.SyntaxNode);
+        }
+
+        private string GetPropertyIdentifier(PropertyDeclarationSyntax syntaxNode)
+        {
+            return syntaxNode.Identifier.Text;
         }
 
         private List<PropertyItem> GetPropertyItems(ClassDeclarationSyntax syntaxNode)
