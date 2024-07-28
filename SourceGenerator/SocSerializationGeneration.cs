@@ -45,6 +45,12 @@ namespace SourceGenerator
             FileLogger.WriteLn($"propertyItems.Count = {propertyItems.Count}");
 #endif
 
+            var fieldsItems = GetFieldItems(targetClassItem.SyntaxNode);
+
+#if DEBUG
+            FileLogger.WriteLn($"fieldsItems.Count = {fieldsItems.Count}");
+#endif
+
             var sourceCodePlainObjectBuilder = new StringBuilder();
 
             sourceCodePlainObjectBuilder.AppendLine($"namespace {targetClassItem.Namespace}");
@@ -130,7 +136,7 @@ namespace SourceGenerator
             var propertiesDeclarationsList = syntaxNode.ChildNodes()?.Where(p => p.IsKind(SyntaxKind.PropertyDeclaration) && IsSerializedProperty(p)) ?? new List<SyntaxNode>();
 
 #if DEBUG
-            FileLogger.WriteLn($"propertiesDeclarationsList.Count() = {propertiesDeclarationsList.Count()}");
+            //FileLogger.WriteLn($"propertiesDeclarationsList.Count() = {propertiesDeclarationsList.Count()}");
 #endif
 
             if(propertiesDeclarationsList.Count() == 0)
@@ -141,7 +147,7 @@ namespace SourceGenerator
             foreach(var propertyDeclaration in propertiesDeclarationsList)
             {
 #if DEBUG
-                GeneratorsHelper.ShowSyntaxNode(0, propertyDeclaration);
+                //GeneratorsHelper.ShowSyntaxNode(0, propertyDeclaration);
 #endif
 
                 var propertyDeclarationSyntax = (PropertyDeclarationSyntax)propertyDeclaration;
@@ -155,7 +161,7 @@ namespace SourceGenerator
                 FillUpBaseFieldItem(propertyDeclaration, item);
 
 #if DEBUG
-                FileLogger.WriteLn($"item = {item}");
+                //FileLogger.WriteLn($"item = {item}");
 #endif
 
                 result.Add(item);
@@ -209,6 +215,24 @@ namespace SourceGenerator
         private List<FieldItem> GetFieldItems(ClassDeclarationSyntax syntaxNode)
         {
             var result = new List<FieldItem>();
+
+            var fieldsDeclarationList = syntaxNode.ChildNodes()?.Where(p => p.IsKind(SyntaxKind.FieldDeclaration)) ?? new List<SyntaxNode>();
+
+#if DEBUG
+            FileLogger.WriteLn($"fieldsDeclarationList.Count() = {fieldsDeclarationList.Count()}");
+#endif
+
+            if (fieldsDeclarationList.Count() == 0)
+            {
+                return result;
+            }
+
+            foreach(var fieldDeclaration in fieldsDeclarationList)
+            {
+#if DEBUG
+                GeneratorsHelper.ShowSyntaxNode(0, fieldDeclaration);
+#endif
+            }
 
             return result;
         }
