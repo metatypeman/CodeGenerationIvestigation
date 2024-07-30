@@ -23,7 +23,7 @@ namespace TestSandBox.SerializedObjects
 
         private void OnReadPlainObject(FactPo plainObject, IDeserializer deserializer)
         {
-            
+            FactPart = deserializer.GetDeserializedObject<FirstFactPart>(plainObject.FactPart);
         }
 
     }

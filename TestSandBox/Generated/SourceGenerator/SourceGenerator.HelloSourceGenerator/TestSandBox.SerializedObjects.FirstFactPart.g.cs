@@ -31,15 +31,15 @@ namespace TestSandBox.SerializedObjects
 
         private void OnReadPlainObject(FirstFactPartPo plainObject, IDeserializer deserializer)
         {
-            
-            
-            
-            
-            
-            
-            
-            
-            
+            IntProp = plainObject.IntProp;
+            StringProp = plainObject.StringProp;
+            ObjectProp = deserializer.GetDeserializedObject<object>(plainObject.ObjectProp);
+            ListStrProp = deserializer.GetDeserializedObject<List<string>>(plainObject.ListStrProp);
+            _parent = deserializer.GetDeserializedObject<Fact>(plainObject._parent);
+            IntField = plainObject.IntField;
+            StringField = plainObject.StringField;
+            ObjectField = deserializer.GetDeserializedObject<object>(plainObject.ObjectField);
+            ListStrField = deserializer.GetDeserializedObject<List<string>>(plainObject.ListStrField);
         }
 
     }

@@ -225,6 +225,25 @@ namespace SourceGenerator
             return GeneratorsHelper.ToString(variableDeclarator.GetText());
         }
 
+        private string GetTypeName(FieldItem fieldItem)
+        {
+            return GetTypeName(fieldItem.FieldTypeSyntaxNode);
+        }
+
+        private string GetTypeName(PropertyItem propertyItem)
+        {
+            return GetTypeName(propertyItem.FieldTypeSyntaxNode);
+        }
+
+        private string GetTypeName(SyntaxNode syntaxNode)
+        {
+#if DEBUG
+            GeneratorsHelper.ShowSyntaxNode(0, syntaxNode);
+#endif
+
+            return GeneratorsHelper.ToString(syntaxNode.GetText()); ;
+        }
+
         private List<PropertyItem> GetPropertyItems(ClassDeclarationSyntax syntaxNode)
         {
             var result = new List<PropertyItem>();
@@ -464,7 +483,7 @@ namespace SourceGenerator
             sb.Append(" = ");
             switch (fieldItem.KindFieldType)
             {
-                case KindFieldType.PredefinedType:
+                case KindFieldType.PredefinedType:                    
                     sb.Append(fieldIndentifier);
                     break;
 
@@ -478,15 +497,63 @@ namespace SourceGenerator
 
         private string CreateReadProperty(PropertyItem propertyItem)
         {
-            var sb = new StringBuilder();
+            var propertyIdentifier = GetPropertyIdentifier(propertyItem);
 
+            var sb = new StringBuilder();
+            sb.Append(propertyIdentifier);
+            sb.Append(" = ");
+
+            switch (propertyItem.KindFieldType)
+            {
+                case KindFieldType.PredefinedType:
+                    sb.Append("plainObject.");
+                    sb.Append(propertyIdentifier);
+                    break;
+
+                default:
+                    {
+                        var typeName = GetTypeName(propertyItem);
+
+#if DEBUG
+                        FileLogger.WriteLn($"typeName = '{typeName}'");
+#endif
+
+                        sb.Append($"deserializer.GetDeserializedObject<{typeName}>(plainObject.{propertyIdentifier})");
+                    }
+                    break;
+            }
+            sb.Append(";");
             return sb.ToString();
         }
 
         private string CreateReadField(FieldItem fieldItem)
         {
-            var sb = new StringBuilder();
+            var fieldIndentifier = GetFieldIdentifier(fieldItem);
 
+            var sb = new StringBuilder();
+            sb.Append(fieldIndentifier);
+            sb.Append(" = ");
+
+            switch (fieldItem.KindFieldType)
+            {
+                case KindFieldType.PredefinedType:
+                    sb.Append("plainObject.");
+                    sb.Append(fieldIndentifier);
+                    break;
+
+                default:
+                    {
+                        var typeName = GetTypeName(fieldItem);
+
+#if DEBUG
+                        FileLogger.WriteLn($"typeName = '{typeName}'");
+#endif
+
+                        sb.Append($"deserializer.GetDeserializedObject<{typeName}>(plainObject.{fieldIndentifier})");
+                    }
+                    break;
+            }
+            sb.Append(";");
             return sb.ToString();
         }
 
