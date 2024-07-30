@@ -446,12 +446,8 @@ namespace SourceGenerator
                     sb.Append(propertyIdentifier);
                     break;
 
-                case KindFieldType.Identifier:
-                    sb.Append($"serializer.GetSerializedObjectPtr({propertyIdentifier})");
-                    break;
-
                 default:
-                    sb.Append($"serializer.GetSerializedObjectPtrFromObject({propertyIdentifier})");
+                    sb.Append($"serializer.GetSerializedObjectPtr({propertyIdentifier})");
                     break;
             }
             sb.Append(";");
@@ -472,12 +468,8 @@ namespace SourceGenerator
                     sb.Append(fieldIndentifier);
                     break;
 
-                case KindFieldType.Identifier:
-                    sb.Append($"serializer.GetSerializedObjectPtr({fieldIndentifier})");
-                    break;
-
                 default:
-                    sb.Append($"serializer.GetSerializedObjectPtrFromObject({fieldIndentifier})");
+                    sb.Append($"serializer.GetSerializedObjectPtr({fieldIndentifier})");
                     break;
             }
             sb.Append(";");

@@ -15,13 +15,13 @@ namespace TestSandBox.SerializedObjects
         {
             plainObject.IntProp = IntProp;
             plainObject.StringProp = StringProp;
-            plainObject.ObjectProp = serializer.GetSerializedObjectPtrFromObject(ObjectProp);
-            plainObject.ListStrProp = serializer.GetSerializedObjectPtrFromObject(ListStrProp);
+            plainObject.ObjectProp = serializer.GetSerializedObjectPtr(ObjectProp);
+            plainObject.ListStrProp = serializer.GetSerializedObjectPtr(ListStrProp);
             plainObject._parent = serializer.GetSerializedObjectPtr(_parent);
             plainObject.IntField = IntField;
             plainObject.StringField = StringField;
-            plainObject.ObjectField = serializer.GetSerializedObjectPtrFromObject(ObjectField);
-            plainObject.ListStrField = serializer.GetSerializedObjectPtrFromObject(ListStrField);
+            plainObject.ObjectField = serializer.GetSerializedObjectPtr(ObjectField);
+            plainObject.ListStrField = serializer.GetSerializedObjectPtr(ListStrField);
         }
 
         void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
