@@ -15,11 +15,11 @@ namespace SourceGenerator
         public SocSerializationGeneration(GeneratorExecutionContext context)
         {
             _context = context;
-            _pathsList = context.Compilation.SyntaxTrees.Select(t => t.FilePath).ToList();
+            //_pathsList = context.Compilation.SyntaxTrees.Select(t => t.FilePath).ToList();
         }
 
         private readonly GeneratorExecutionContext _context;
-        private readonly List<string> _pathsList;
+        //private readonly List<string> _pathsList;
 
         public void Run(TargetCompilationUnit targetCompilationUnit)
         {
@@ -582,26 +582,7 @@ namespace SourceGenerator
 
         private void SaveFile(string source, string fileName)
         {
-            var fileNameForSearch = $"\\{fileName}";
-
-#if DEBUG
-            FileLogger.WriteLn($"fileNameForSearch = {fileNameForSearch}");
-#endif
-
-            if (_pathsList.Any(p => p.EndsWith(fileNameForSearch)))
-            {
-                var path = _pathsList.First(p => p.EndsWith(fileNameForSearch));
-
-#if DEBUG
-                FileLogger.WriteLn($"path = {path}");
-#endif
-
-                File.WriteAllText(path, source, Encoding.UTF8);
-            }
-            else
-            {
-                _context.AddSource(fileName, SourceText.From(source, Encoding.UTF8));
-            }
+            _context.AddSource(fileName, SourceText.From(source, Encoding.UTF8));
         }
 
 #if DEBUG

@@ -10,14 +10,14 @@ namespace SourceGenerator
         {
             var now = DateTime.Now;
 
-            _fileName = Path.Combine(@"c:\Users\Acer\", $"{now:dd.MM.yyyyy_HHmmss}.log");
+            //_fileName = Path.Combine(@"c:\Users\Acer\", $"{now:dd.MM.yyyyy_HHmmss}.log");
         }
 
-        private static string _fileName;
+        //private static string _fileName;
 
         public static void WriteLn(string text)
         {
-            File.AppendAllLines(_fileName, new List<string> { text});
+            //File.AppendAllLines(_fileName, new List<string> { text});
         }
     }
 }
