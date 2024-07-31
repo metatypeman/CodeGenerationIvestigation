@@ -182,7 +182,23 @@ namespace SourceGenerator
 
         private string GetClassIdentifier(ClassDeclarationSyntax syntaxNode)
         {
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, syntaxNode);
+#endif
+
             var sb = new StringBuilder(syntaxNode.Identifier.Text);
+
+            var typeParameterList = syntaxNode?.ChildNodes().FirstOrDefault(p => p.IsKind(SyntaxKind.TypeParameterList));
+
+#if DEBUG
+            FileLogger.WriteLn("typeParameterList:");
+            GeneratorsHelper.ShowSyntaxNode(0, typeParameterList);
+#endif
+
+            if(typeParameterList != null)
+            {
+                sb.Append(GeneratorsHelper.ToString(typeParameterList.GetText()));
+            }
 
             return sb.ToString();
         }
