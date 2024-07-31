@@ -18,12 +18,12 @@ namespace SourceGenerator
 
         private readonly IEnumerable<SyntaxTree> _syntaxTrees;
 
-        public List<TargetClassItem> Run(string attributeName)
+        public List<TargetCompilationUnit> Run(string attributeName)
         {
             return Run(new List<string> { attributeName });
         }
 
-        public List<TargetClassItem> Run(List<string> attributeNames)
+        public List<TargetCompilationUnit> Run(List<string> attributeNames)
         {
 #if DEBUG
             //FileLogger.WriteLn($"attributeNames.Count = {attributeNames.Count}");
@@ -33,7 +33,7 @@ namespace SourceGenerator
             //}
 #endif
 
-            var result = new List<TargetClassItem>();
+            var result = new List<TargetCompilationUnit>();
 
             var context = new TargetClassSearcherContext();
 
@@ -44,7 +44,24 @@ namespace SourceGenerator
                     continue;
                 }
 
-                ProcessSyntaxTree(syntaxTree, attributeNames, context, ref result);
+                var classItemsResult = new List<TargetClassItem>();
+
+                ProcessSyntaxTree(syntaxTree, attributeNames, context, ref classItemsResult);
+
+#if DEBUG
+                FileLogger.WriteLn($"classItemsResult.Count = {classItemsResult.Count}");
+#endif
+
+                if (classItemsResult.Count > 0)
+                {
+                    var item = new TargetCompilationUnit()
+                    {
+                        FilePath = syntaxTree.FilePath,
+                        ClassItems = classItemsResult
+                    };
+
+                    result.Add(item);
+                }
             }
 
             return result;
