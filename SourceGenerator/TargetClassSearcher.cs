@@ -45,8 +45,9 @@ namespace SourceGenerator
                 }
 
                 var classItemsResult = new List<TargetClassItem>();
+                var usings = new List<string>();
 
-                ProcessSyntaxTree(syntaxTree, attributeNames, context, ref classItemsResult);
+                ProcessSyntaxTree(syntaxTree, attributeNames, context, ref classItemsResult, ref usings);
 
 #if DEBUG
                 FileLogger.WriteLn($"classItemsResult.Count = {classItemsResult.Count}");
@@ -54,6 +55,14 @@ namespace SourceGenerator
 
                 if (classItemsResult.Count > 0)
                 {
+#if DEBUG
+                    FileLogger.WriteLn($"usings.Count = {usings.Count}");
+                    foreach(var usingItem in usings)
+                    {
+                        FileLogger.WriteLn($"usingItem = '{usingItem}'");
+                    }
+#endif
+
                     var item = new TargetCompilationUnit()
                     {
                         FilePath = syntaxTree.FilePath,
@@ -67,7 +76,7 @@ namespace SourceGenerator
             return result;
         }
 
-        private void ProcessSyntaxTree(SyntaxTree syntaxTree, List<string> attributeNames, TargetClassSearcherContext context, ref List<TargetClassItem> result)
+        private void ProcessSyntaxTree(SyntaxTree syntaxTree, List<string> attributeNames, TargetClassSearcherContext context, ref List<TargetClassItem> result, ref List<string> usings)
         {
 #if DEBUG
             //FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
@@ -96,6 +105,21 @@ namespace SourceGenerator
             if(namespaceDeclarations.Count() == 0)
             {
                 return;
+            }
+
+            var localUsings = childNodes.Where(p => p.IsKind(SyntaxKind.UsingDirective)).Select(p => GeneratorsHelper.ToString(p.GetText()));
+
+#if DEBUG
+            FileLogger.WriteLn($"localUsings.Count() = {localUsings.Count()}");
+            foreach(var localUsing in localUsings)
+            {
+                FileLogger.WriteLn($"localUsing = '{localUsing}'");
+            }
+#endif
+
+            if(localUsings.Any())
+            {
+                usings.AddRange(localUsings);
             }
 
             context.FilePath = syntaxTree.FilePath;

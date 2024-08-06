@@ -26,14 +26,14 @@ namespace SourceGenerator
             //    FileLogger.WriteLn($"path = '{path}'");
             //}
 
-            //foreach (var syntaxTree in syntaxTrees)
-            //{
-            //    FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
+            foreach (var syntaxTree in syntaxTrees)
+            {
+                FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
 
-            //    var root = syntaxTree.GetRoot();
+                var root = syntaxTree.GetRoot();
 
-            //    ShowSyntaxNode(0, root);
-            //}
+                GeneratorsHelper.ShowSyntaxNode(0, root);
+            }
 
             FileLogger.WriteLn("-----------------");
 
