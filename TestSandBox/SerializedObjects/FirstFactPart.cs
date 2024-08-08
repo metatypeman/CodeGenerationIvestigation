@@ -19,5 +19,8 @@
         public List<string> ListStrProp { get; set; }
         public List<string> ListStrField;
 
+        public List<string> ListStrPropWithInit { get; set; } = new List<string>();
+        public List<string> ListStrFieldWithInit = new List<string>();
+
     }
 }

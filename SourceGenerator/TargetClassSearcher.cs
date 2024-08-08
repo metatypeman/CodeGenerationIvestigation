@@ -66,7 +66,8 @@ namespace SourceGenerator
                     var item = new TargetCompilationUnit()
                     {
                         FilePath = syntaxTree.FilePath,
-                        ClassItems = classItemsResult
+                        ClassItems = classItemsResult,
+                        Usings = usings
                     };
 
                     result.Add(item);

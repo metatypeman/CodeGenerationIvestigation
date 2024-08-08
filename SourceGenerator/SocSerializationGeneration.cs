@@ -238,14 +238,15 @@ namespace SourceGenerator
             GeneratorsHelper.ShowSyntaxNode(0, syntaxNode);
 #endif
 
-            var variableDeclarator = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclaration))?.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclarator));
+            var variableDeclarator = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclaration))?.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclarator)) as VariableDeclaratorSyntax;
 
 #if DEBUG
             FileLogger.WriteLn($"variableDeclarator == null = {variableDeclarator == null}");
             GeneratorsHelper.ShowSyntaxNode(0, variableDeclarator);
+            FileLogger.WriteLn($"variableDeclarator.Identifier.Text = '{variableDeclarator.Identifier.Text}'");
 #endif
 
-            return GeneratorsHelper.ToString(variableDeclarator.GetText());
+            return variableDeclarator.Identifier.Text;
         }
 
         private string GetTypeName(FieldItem fieldItem)
@@ -311,13 +312,13 @@ namespace SourceGenerator
         private static bool IsSerializedProperty(SyntaxNode propertyDeclarationNode)
         {
 #if DEBUG
-            //GeneratorsHelper.ShowSyntaxNode(0, propertyDeclarationNode);
+            GeneratorsHelper.ShowSyntaxNode(0, propertyDeclarationNode);
 #endif
 
             var accessorList = propertyDeclarationNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.AccessorList));
 
 #if DEBUG
-            //GeneratorsHelper.ShowSyntaxNode(0, accessorList);
+            GeneratorsHelper.ShowSyntaxNode(0, accessorList);
 #endif
 
             if (accessorList == null)
@@ -328,7 +329,7 @@ namespace SourceGenerator
             var getAccessorDeclaration = accessorList.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.GetAccessorDeclaration));
 
 #if DEBUG
-            //GeneratorsHelper.ShowSyntaxNode(0, getAccessorDeclaration);
+            GeneratorsHelper.ShowSyntaxNode(0, getAccessorDeclaration);
 #endif
 
             if ((getAccessorDeclaration?.ChildNodes()?.Count() ?? 0) > 0)
@@ -339,7 +340,7 @@ namespace SourceGenerator
             var setAccessorDeclaration = accessorList.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.SetAccessorDeclaration));
 
 #if DEBUG
-            //GeneratorsHelper.ShowSyntaxNode(0, setAccessorDeclaration);
+            GeneratorsHelper.ShowSyntaxNode(0, setAccessorDeclaration);
 #endif
 
             if ((setAccessorDeclaration?.ChildNodes()?.Count() ?? 0) > 0)

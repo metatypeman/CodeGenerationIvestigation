@@ -14,7 +14,7 @@ namespace SourceGenerator
         {
             var sb = new StringBuilder();
             sb.AppendLine($"{nameof(FilePath)} = '{FilePath}'");
-            sb.AppendLine($"{nameof(ClassItems)}.{nameof(Usings.Count)} = '{Usings.Count}'");
+            sb.AppendLine($"{nameof(Usings)}.{nameof(Usings.Count)} = '{Usings.Count}'");
             sb.AppendLine($"{nameof(ClassItems)}.{nameof(ClassItems.Count)} = '{ClassItems.Count}'");
             return sb.ToString();
         }
