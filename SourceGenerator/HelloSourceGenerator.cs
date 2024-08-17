@@ -35,8 +35,23 @@ namespace SourceGenerator
             //    GeneratorsHelper.ShowSyntaxNode(0, root);
             //}
 
+            var codeChunksSearcher = new CodeChunksSearcher(context);
+            var items = codeChunksSearcher.Run();
+
+            //FileLogger.WriteLn($"items.Count = {items.Count}");
+
             var codeChunkCodeGenerator = new CodeChunkCodeGenerator(context);
-            codeChunkCodeGenerator.Run();
+
+            foreach (var item in items)
+            {
+                //    //FileLogger.WriteLn($"item = {item}");
+                //    //ShowSyntaxNode(0, item.SyntaxNode);
+
+                codeChunkCodeGenerator.Run(item);
+            }
+
+            //
+            //codeChunkCodeGenerator.Run();
 
             FileLogger.WriteLn("-----------------");
 
