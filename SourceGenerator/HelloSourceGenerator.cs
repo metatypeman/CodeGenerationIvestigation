@@ -26,32 +26,35 @@ namespace SourceGenerator
             //    FileLogger.WriteLn($"path = '{path}'");
             //}
 
-            foreach (var syntaxTree in syntaxTrees)
-            {
-                FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
+            //foreach (var syntaxTree in syntaxTrees)
+            //{
+            //    FileLogger.WriteLn($"syntaxTree.FilePath = {syntaxTree.FilePath}");
 
-                var root = syntaxTree.GetRoot();
+            //    var root = syntaxTree.GetRoot();
 
-                GeneratorsHelper.ShowSyntaxNode(0, root);
-            }
+            //    GeneratorsHelper.ShowSyntaxNode(0, root);
+            //}
+
+            var codeChunkCodeGenerator = new CodeChunkCodeGenerator(context);
+            codeChunkCodeGenerator.Run();
 
             FileLogger.WriteLn("-----------------");
 
-            var searcher = new TargetClassSearcher(syntaxTrees);
+            //var searcher = new TargetClassSearcher(syntaxTrees);
 
-            var items = searcher.Run("SocSerialization");
+            //var items = searcher.Run("SocSerialization");
 
-            FileLogger.WriteLn($"items.Count = {items.Count}");
+            //FileLogger.WriteLn($"items.Count = {items.Count}");
 
-            var socSerializationGeneration = new SocSerializationGeneration(context);
+            //var socSerializationGeneration = new SocSerializationGeneration(context);
 
-            foreach (var item in items)
-            {
-                //FileLogger.WriteLn($"item = {item}");
-                //ShowSyntaxNode(0, item.SyntaxNode);
+            //foreach (var item in items)
+            //{
+            //    //FileLogger.WriteLn($"item = {item}");
+            //    //ShowSyntaxNode(0, item.SyntaxNode);
 
-                socSerializationGeneration.Run(item);
-            }
+            //    socSerializationGeneration.Run(item);
+            //}
 
             // Code generation goes here
 
