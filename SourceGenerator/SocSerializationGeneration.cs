@@ -116,7 +116,7 @@ namespace SymOntoClay.SourceGenerator
             var hasConstructorWithoutParameters = HasConstructorWithoutParameters(targetClassItem.SyntaxNode);
 
 #if DEBUG
-            FileLogger.WriteLn($"hasConstructorWithoutParameters = {hasConstructorWithoutParameters}");
+            //FileLogger.WriteLn($"hasConstructorWithoutParameters = {hasConstructorWithoutParameters}");
 #endif
 
             var classIdentifier = GetClassIdentifier(targetClassItem.SyntaxNode);
@@ -178,7 +178,7 @@ namespace SymOntoClay.SourceGenerator
             var constructorDeclarations = syntaxNode.ChildNodes().OfType<ConstructorDeclarationSyntax>();
 
 #if DEBUG
-            FileLogger.WriteLn($"constructorDeclarations.Count() = {constructorDeclarations.Count()}");
+            //FileLogger.WriteLn($"constructorDeclarations.Count() = {constructorDeclarations.Count()}");
 #endif
 
             if(constructorDeclarations.Count() == 0)
