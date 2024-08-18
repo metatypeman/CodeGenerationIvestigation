@@ -22,11 +22,7 @@ namespace SymOntoClay.SourceGenerator
         {
             var requredNamespaces = new List<string>()
             {
-                "using System.Text;",
-                "using System;",
-                "using SymOntoClay.Common;",
-                "using SymOntoClay.Common.DebugHelpers;",
-                "using SymOntoClay.Serialization;"
+                "using TestSandBox.Serialization;"
             };
 
             if(targetCompilationUnit.Usings?.Any() ?? false)
@@ -70,7 +66,7 @@ namespace SymOntoClay.SourceGenerator
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"namespace {targetClassItem.Namespace}.PlainObjects");
             sourceCodeBuilder.AppendLine("{");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}public partial class {plainObjectClassName}: IObjectToString");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}public partial class {plainObjectClassName}");
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}{{");
             foreach (var propertyItem in propertyItems)
             {
@@ -80,31 +76,31 @@ namespace SymOntoClay.SourceGenerator
             {
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public {GetBaseFieldMemberType(fieldItem)} {fieldItem.Identifier};");
             }
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}/// <inheritdoc/>");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public override string ToString()");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}return ToString(0u);");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}/// <inheritdoc/>");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public string ToString(uint n)");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}return this.GetDefaultToStringInformation(n);");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}/// <inheritdoc/>");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}string IObjectToString.PropertiesToString(uint n)");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}var spaces = DisplayHelper.Spaces(n);");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}var sb = new StringBuilder();");
-            foreach (var propertyItem in propertyItems)
-            {
-                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}sb.AppendLine($\"{{spaces}}{{nameof({propertyItem.Identifier})}} = {{{propertyItem.Identifier}}}\");");
-            }
-            foreach (var fieldItem in fieldsItems)
-            {
-                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}sb.AppendLine($\"{{spaces}}{{nameof({fieldItem.Identifier})}} = {{{fieldItem.Identifier}}}\");");
-            }
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}return sb.ToString();");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}/// <inheritdoc/>");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public override string ToString()");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}return ToString(0u);");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}/// <inheritdoc/>");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public string ToString(uint n)");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}return this.GetDefaultToStringInformation(n);");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}/// <inheritdoc/>");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}string IObjectToString.PropertiesToString(uint n)");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}var spaces = DisplayHelper.Spaces(n);");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}var sb = new StringBuilder();");
+            //foreach (var propertyItem in propertyItems)
+            //{
+            //    sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}sb.AppendLine($\"{{spaces}}{{nameof({propertyItem.Identifier})}} = {{{propertyItem.Identifier}}}\");");
+            //}
+            //foreach (var fieldItem in fieldsItems)
+            //{
+            //    sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}sb.AppendLine($\"{{spaces}}{{nameof({fieldItem.Identifier})}} = {{{fieldItem.Identifier}}}\");");
+            //}
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}return sb.ToString();");
+            //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine("}");
 

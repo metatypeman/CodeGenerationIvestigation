@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
+using SymOntoClay.SourceGenerator;
 using System;
 using System.IO;
 using System.Linq;
@@ -35,41 +36,41 @@ namespace SourceGenerator
             //    GeneratorsHelper.ShowSyntaxNode(0, root);
             //}
 
-            var codeChunksSearcher = new CodeChunksSearcher(context);
-            var items = codeChunksSearcher.Run();
+            //var codeChunksSearcher = new CodeChunksSearcher(context);
+            //var items = codeChunksSearcher.Run();
 
-            //FileLogger.WriteLn($"items.Count = {items.Count}");
+            ////FileLogger.WriteLn($"items.Count = {items.Count}");
 
-            var codeChunkCodeGenerator = new CodeChunkCodeGenerator(context);
+            //var codeChunkCodeGenerator = new CodeChunkCodeGenerator(context);
 
-            foreach (var item in items)
-            {
-                //    //FileLogger.WriteLn($"item = {item}");
-                //    //ShowSyntaxNode(0, item.SyntaxNode);
+            //foreach (var item in items)
+            //{
+            //    //    //FileLogger.WriteLn($"item = {item}");
+            //    //    //ShowSyntaxNode(0, item.SyntaxNode);
 
-                codeChunkCodeGenerator.Run(item);
-            }
+            //    codeChunkCodeGenerator.Run(item);
+            //}
 
             //
             //codeChunkCodeGenerator.Run();
 
             FileLogger.WriteLn("-----------------");
 
-            //var searcher = new TargetClassSearcher(syntaxTrees);
+            var searcher = new TargetClassSearcher(syntaxTrees);
 
-            //var items = searcher.Run("SocSerialization");
+            var items = searcher.Run("SocSerialization");
 
-            //FileLogger.WriteLn($"items.Count = {items.Count}");
+            FileLogger.WriteLn($"items.Count = {items.Count}");
 
-            //var socSerializationGeneration = new SocSerializationGeneration(context);
+            var socSerializationGeneration = new SocSerializationGeneration(context);
 
-            //foreach (var item in items)
-            //{
+            foreach (var item in items)
+            {
             //    //FileLogger.WriteLn($"item = {item}");
             //    //ShowSyntaxNode(0, item.SyntaxNode);
 
-            //    socSerializationGeneration.Run(item);
-            //}
+                socSerializationGeneration.Run(item);
+            }
 
             // Code generation goes here
 
