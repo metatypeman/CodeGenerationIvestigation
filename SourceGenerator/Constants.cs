@@ -5,5 +5,6 @@
         public const string SerializationAttributeName = "SocSerialization";
         public const string NoSerializableMemberAttributeName = "SocNoSerializable";
         public const string SerializableActionKeyAttributeName = "SocSerializableActionKey";
+        public const string BasedOnSocNoSerializableAttributeName = "BasedOnSocNoSerializable";
     }
 }

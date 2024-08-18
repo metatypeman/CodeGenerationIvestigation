@@ -91,7 +91,7 @@ namespace SymOntoClay.SourceGenerator
             }
 
 #if DEBUG
-            FileLogger.WriteLn($"actionKeyName = '{actionKeyName}'");
+            //FileLogger.WriteLn($"actionKeyName = '{actionKeyName}'");
 #endif
 
             sourceCodeBuilder.AppendLine();
@@ -478,7 +478,7 @@ namespace SymOntoClay.SourceGenerator
             var typeName = GetTypeName(baseFieldItem).Replace(" ", string.Empty).Trim();
 
 #if DEBUG
-            FileLogger.WriteLn($"typeName = '{typeName}'");
+            //FileLogger.WriteLn($"typeName = '{typeName}'");
 #endif
 
             return typeName == "Action" || typeName.StartsWith("Action<") || typeName.StartsWith("Func<");
@@ -533,8 +533,8 @@ namespace SymOntoClay.SourceGenerator
         private string CreateReadMember(BaseFieldItem baseFieldItem, string actionKeyName, ref int actionIndex)
         {
 #if DEBUG
-            FileLogger.WriteLn($"actionKeyName = '{actionKeyName}'");
-            FileLogger.WriteLn($"actionIndex = {actionIndex}");
+            //FileLogger.WriteLn($"actionKeyName = '{actionKeyName}'");
+            //FileLogger.WriteLn($"actionIndex = {actionIndex}");
 #endif
 
             var memberIdentifier = baseFieldItem.Identifier;
@@ -555,8 +555,8 @@ namespace SymOntoClay.SourceGenerator
                         var typeName = GetTypeName(baseFieldItem);
 
 #if DEBUG
-                        FileLogger.WriteLn($"baseFieldItem.IsActionOrFunc = {baseFieldItem.IsActionOrFunc}");
-                        FileLogger.WriteLn($"typeName = '{typeName}'");
+                        //FileLogger.WriteLn($"baseFieldItem.IsActionOrFunc = {baseFieldItem.IsActionOrFunc}");
+                        //FileLogger.WriteLn($"typeName = '{typeName}'");
 #endif
 
                         if(baseFieldItem.IsActionOrFunc)
