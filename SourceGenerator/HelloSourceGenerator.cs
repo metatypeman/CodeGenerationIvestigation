@@ -58,7 +58,7 @@ namespace SourceGenerator
 
             var searcher = new TargetClassSearcher(syntaxTrees);
 
-            var items = searcher.Run("SocSerialization");
+            var items = searcher.Run(Constants.SerializationAttributeName);
 
             FileLogger.WriteLn($"items.Count = {items.Count}");
 

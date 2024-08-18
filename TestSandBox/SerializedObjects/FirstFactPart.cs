@@ -32,5 +32,8 @@
         [SocNoSerializable]
         public int NoSerializedIntField;
 
+        [SocSerializableActionKey]
+        public int _id;
+
     }
 }

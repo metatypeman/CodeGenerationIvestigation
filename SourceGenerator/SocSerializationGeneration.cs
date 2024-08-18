@@ -249,7 +249,7 @@ namespace SymOntoClay.SourceGenerator
         {
             var result = new List<PropertyItem>();
 
-            var propertiesDeclarationsList = syntaxNode.ChildNodes()?.Where(p => p.IsKind(SyntaxKind.PropertyDeclaration) && IsSerializedProperty(p)) ?? new List<SyntaxNode>();
+            var propertiesDeclarationsList = syntaxNode.ChildNodes()?.Where(p => p.IsKind(SyntaxKind.PropertyDeclaration) && IsSerializedProperty(p)).OfType<PropertyDeclarationSyntax>() ?? new List<PropertyDeclarationSyntax>();
 
             if (propertiesDeclarationsList.Count() == 0)
             {
@@ -258,12 +258,25 @@ namespace SymOntoClay.SourceGenerator
 
             foreach (var propertyDeclaration in propertiesDeclarationsList)
             {
-                var propertyDeclarationSyntax = (PropertyDeclarationSyntax)propertyDeclaration;
+#if DEBUG
+                GeneratorsHelper.ShowSyntaxNode(0, propertyDeclaration);
+#endif
+
+                var hasNoSerializableMemberAttribute = HasNoSerializableMemberAttribute(propertyDeclaration);
+
+#if DEBUG
+                FileLogger.WriteLn($"hasNoSerializableMemberAttribute = {hasNoSerializableMemberAttribute}");
+#endif
+
+                if(hasNoSerializableMemberAttribute)
+                {
+                    continue;
+                }
 
                 var item = new PropertyItem()
                 {
                     ClassDeclarationSyntaxNode = syntaxNode,
-                    SyntaxNode = propertyDeclarationSyntax
+                    SyntaxNode = propertyDeclaration
                 };
 
                 FillUpBaseFieldItem(propertyDeclaration, item);
@@ -304,7 +317,7 @@ namespace SymOntoClay.SourceGenerator
         {
             var result = new List<FieldItem>();
 
-            var fieldsDeclarationList = syntaxNode.ChildNodes()?.Where(p => p.IsKind(SyntaxKind.FieldDeclaration)) ?? new List<SyntaxNode>();
+            var fieldsDeclarationList = syntaxNode.ChildNodes()?.Where(p => p.IsKind(SyntaxKind.FieldDeclaration)).OfType<FieldDeclarationSyntax>() ?? new List<FieldDeclarationSyntax>();
 
             if (fieldsDeclarationList.Count() == 0)
             {
@@ -313,12 +326,25 @@ namespace SymOntoClay.SourceGenerator
 
             foreach (var fieldDeclaration in fieldsDeclarationList)
             {
-                var fieldDeclarationSyntax = (FieldDeclarationSyntax)fieldDeclaration;
+#if DEBUG
+                GeneratorsHelper.ShowSyntaxNode(0, fieldDeclaration);
+#endif
+
+                var hasNoSerializableMemberAttribute = HasNoSerializableMemberAttribute(fieldDeclaration);
+
+#if DEBUG
+                FileLogger.WriteLn($"hasNoSerializableMemberAttributes = {hasNoSerializableMemberAttribute}");
+#endif
+
+                if (hasNoSerializableMemberAttribute)
+                {
+                    continue;
+                }
 
                 var item = new FieldItem()
                 {
                     ClassDeclarationSyntaxNode = syntaxNode,
-                    SyntaxNode = fieldDeclarationSyntax
+                    SyntaxNode = fieldDeclaration
                 };
 
                 var variableDeclaration = fieldDeclaration.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclaration));
@@ -329,6 +355,16 @@ namespace SymOntoClay.SourceGenerator
             }
 
             return result;
+        }
+
+        private bool HasNoSerializableMemberAttribute(SyntaxNode syntaxNode)
+        {
+            return HasMemberAttribute(syntaxNode, Constants.NoSerializableMemberAttributeName);
+        }
+
+        private bool HasMemberAttribute(SyntaxNode syntaxNode, string attributeName)
+        {
+            return syntaxNode.ChildNodes().OfType<AttributeListSyntax>().Any(p => p.ChildNodes().OfType<AttributeSyntax>().Any(x => x.ChildNodes().OfType<IdentifierNameSyntax>().Any(y => y.Identifier.Text == attributeName)));
         }
 
         private void FillUpBaseFieldItem(SyntaxNode syntaxNode, BaseFieldItem baseFieldItem)
