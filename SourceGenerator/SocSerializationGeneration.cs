@@ -6,6 +6,7 @@ using System.Text;
 using System;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
+using SourceGenerator;
 
 namespace SymOntoClay.SourceGenerator
 {
@@ -42,6 +43,10 @@ namespace SymOntoClay.SourceGenerator
                 ProcessTargetClassItem(targetClassItem, sourceCodeBuilder);
             }
 
+#if DEBUG
+            FileLogger.WriteLn($"sourceCodeBuilder = {sourceCodeBuilder}");
+#endif
+
             var firstClassItem = targetCompilationUnit.ClassItems.First();
 
             var fileName = $"{firstClassItem.Namespace}.{firstClassItem.Identifier}.g.cs";
@@ -51,6 +56,10 @@ namespace SymOntoClay.SourceGenerator
 
         private void ProcessTargetClassItem(TargetClassItem targetClassItem, StringBuilder sourceCodeBuilder)
         {
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, targetClassItem.SyntaxNode);
+#endif
+
             var identationStep = 4;
             var baseIdentation = 0;
             var classDeclIdentation = baseIdentation + identationStep;
@@ -104,11 +113,26 @@ namespace SymOntoClay.SourceGenerator
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine("}");
 
+            var hasConstructorWithoutParameters = HasConstructorWithoutParameters(targetClassItem.SyntaxNode);
+
+#if DEBUG
+            FileLogger.WriteLn($"hasConstructorWithoutParameters = {hasConstructorWithoutParameters}");
+#endif
+
+            var classIdentifier = GetClassIdentifier(targetClassItem.SyntaxNode);
+
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"namespace {targetClassItem.Namespace}");
             sourceCodeBuilder.AppendLine("{");
-            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}public partial class {GetClassIdentifier(targetClassItem.SyntaxNode)}: ISerializable");
+            sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}public partial class {classIdentifier}: ISerializable");
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}{{");
+
+            if(!hasConstructorWithoutParameters)
+            {
+                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public {classIdentifier}(){{}}");
+                sourceCodeBuilder.AppendLine();
+            }
+
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}Type ISerializable.GetPlainObjectType() => typeof(PlainObjects.{plainObjectClassName});");
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)");
@@ -147,6 +171,22 @@ namespace SymOntoClay.SourceGenerator
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine("}");
+        }
+
+        private bool HasConstructorWithoutParameters(ClassDeclarationSyntax syntaxNode)
+        {
+            var constructorDeclarations = syntaxNode.ChildNodes().OfType<ConstructorDeclarationSyntax>();
+
+#if DEBUG
+            FileLogger.WriteLn($"constructorDeclarations.Count() = {constructorDeclarations.Count()}");
+#endif
+
+            if(constructorDeclarations.Count() == 0)
+            {
+                return true;
+            }
+
+            return constructorDeclarations.Any(p => p.ParameterList.Parameters.Count == 0);
         }
 
         private string GetBaseFieldMemberType(BaseFieldItem baseFieldItem)

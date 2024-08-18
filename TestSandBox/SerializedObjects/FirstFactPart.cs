@@ -3,6 +3,10 @@
     [SocSerialization]
     public partial class FirstFactPart
     {
+        public FirstFactPart(int someParam) 
+        {
+        }
+
         public Fact Parent { get => _parent; set => _parent = value; }
 
         private Fact _parent;
@@ -21,6 +25,12 @@
 
         public List<string> ListStrPropWithInit { get; set; } = new List<string>();
         public List<string> ListStrFieldWithInit = new List<string>();
+
+        [SocNoSerializable]
+        public int NoSerializedIntProp { get; set; }
+
+        [SocNoSerializable]
+        public int NoSerializedIntField;
 
     }
 }
