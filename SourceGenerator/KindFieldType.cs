@@ -1,4 +1,4 @@
-﻿namespace SourceGenerator
+﻿namespace SymOntoClay.SourceGenerator
 {
     public enum KindFieldType
     {

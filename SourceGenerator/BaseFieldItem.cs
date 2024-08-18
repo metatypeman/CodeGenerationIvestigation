@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SourceGenerator
+namespace SymOntoClay.SourceGenerator
 {
     public abstract class BaseFieldItem
     {

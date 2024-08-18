@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Text;
 
-namespace SourceGenerator
+namespace SymOntoClay.SourceGenerator
 {
     public class TargetClassItem
     {

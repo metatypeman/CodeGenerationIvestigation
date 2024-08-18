@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SourceGenerator
+namespace SymOntoClay.SourceGenerator
 {
     public class CodeChunkItem
     {

@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SourceGenerator
+namespace SymOntoClay.SourceGenerator
 {
     public class CodeChunkCodeGenerator
     {
-        public CodeChunkCodeGenerator(GeneratorExecutionContext context) 
+        public CodeChunkCodeGenerator(GeneratorExecutionContext context)
         {
             _context = context;
         }
@@ -19,13 +19,9 @@ namespace SourceGenerator
 
         public void Run(TargetCodeChunksCompilationUnit targetCompilationUnit)
         {
-#if DEBUG
-            //FileLogger.WriteLn($"targetCompilationUnit = {targetCompilationUnit}");
-#endif
-
             var requredNamespaces = new List<string>()
             {
-                "using TestSandBox.SerializedObjects;"
+                "using SymOntoClay.Serialization;"
             };
 
             if (targetCompilationUnit.Usings?.Any() ?? false)
@@ -45,15 +41,7 @@ namespace SourceGenerator
                 ProcessTargetCodeChunkItem(targetCodeChunkItem, sourceCodeBuilder);
             }
 
-#if DEBUG
-            //FileLogger.WriteLn($"sourceCodeBuilder = {sourceCodeBuilder}");
-#endif
-
             var firstCodeChunkItem = targetCompilationUnit.CodeChunkItems.First();
-
-#if DEBUG
-            //FileLogger.WriteLn($"firstCodeChunkItem = {firstCodeChunkItem}");
-#endif
 
             var fileName = $"{GetClassName(firstCodeChunkItem)}.g.cs";
 
@@ -62,11 +50,6 @@ namespace SourceGenerator
 
         private void ProcessTargetCodeChunkItem(CodeChunkItem targetCodeChunkItem, StringBuilder sourceCodeBuilder)
         {
-#if DEBUG
-            //FileLogger.WriteLn($"targetCodeChunkItem = {targetCodeChunkItem}");
-            //GeneratorsHelper.ShowSyntaxNode(0, targetClassItem.SyntaxNode);
-#endif
-
             var identationStep = 4;
             var baseIdentation = 0;
             var classDeclIdentation = baseIdentation + identationStep;
@@ -80,34 +63,18 @@ namespace SourceGenerator
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}public class {GetClassName(targetCodeChunkItem)} : ISocSerializableActionFactory");
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}{{");
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public string Id => \"{targetCodeChunkItem.Identifier}\";");
-            
+
             var actionFieldsDict = new Dictionary<int, string>();
 
             var useIndexInActionFieldName = targetCodeChunkItem.Lambdas.Count > 1;
-
-#if DEBUG
-            //FileLogger.WriteLn($"useIndexInActionFieldName = {useIndexInActionFieldName}");
-#endif
 
             var n = 0;
 
             foreach (var lambda in targetCodeChunkItem.Lambdas)
             {
-#if DEBUG
-                //GeneratorsHelper.ShowSyntaxNode(0, lambda);
-#endif
-
                 var actionTypeName = GetActionTypeName(lambda);
 
-#if DEBUG
-                //FileLogger.WriteLn($"actionTypeName = '{actionTypeName}'");
-#endif
-
                 var actionName = GetActionFieldName(useIndexInActionFieldName, n);
-
-#if DEBUG
-                //FileLogger.WriteLn($"actionName = '{actionName}'");
-#endif
 
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}private {actionTypeName} {actionName} = {lambda.GetText()};");
 
@@ -116,13 +83,13 @@ namespace SourceGenerator
                 actionFieldsDict[n] = actionTypeName;
             }
 
-            if(useIndexInActionFieldName)
+            if (useIndexInActionFieldName)
             {
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public object GetAction(int index)");
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}switch(index)");
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{{");
-                foreach(var actionFieldItem in actionFieldsDict)
+                foreach (var actionFieldItem in actionFieldsDict)
                 {
                     sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}case {actionFieldItem.Key}: return {actionFieldItem.Value};");
                 }
@@ -146,12 +113,7 @@ namespace SourceGenerator
 
         private string GetActionFieldName(bool useIndexInActionFieldName, int n)
         {
-#if DEBUG
-            //FileLogger.WriteLn($"useIndexInActionFieldName = {useIndexInActionFieldName}");
-            //FileLogger.WriteLn($"n = {n}");
-#endif
-
-            if(useIndexInActionFieldName)
+            if (useIndexInActionFieldName)
             {
                 return $"_action{n}";
             }
@@ -161,26 +123,14 @@ namespace SourceGenerator
 
         private string GetActionTypeName(ParenthesizedLambdaExpressionSyntax lambda)
         {
-#if DEBUG
-            //GeneratorsHelper.ShowSyntaxNode(0, lambda);
-#endif
-
             var parameterList = lambda.ParameterList;
 
             var parameterListChildNodes = parameterList.ChildNodes();
 
-#if DEBUG
-            //FileLogger.WriteLn($"parameterListChildNodes.Count() = {parameterListChildNodes.Count()}");
-#endif
-
-            if(parameterListChildNodes.Count() == 0)
+            if (parameterListChildNodes.Count() == 0)
             {
                 return "Action";
             }
-
-#if DEBUG
-            //FileLogger.WriteLn($"lambda.ChildNodes().Count() = {lambda.ChildNodes().Count()}");
-#endif
 
             var actionTypeName = string.Empty;
             var needToAddFuncResultType = false;
@@ -197,32 +147,24 @@ namespace SourceGenerator
 
                 var funcTypeNode = lambda.ChildNodes().ElementAt(0);
 
-#if DEBUG
-                //GeneratorsHelper.ShowSyntaxNode(0, funcTypeNode);
-#endif
-
                 funcResultType = GeneratorsHelper.ToString(funcTypeNode.GetText());
             }
 
             var genericTypeList = new List<string>();
 
-            foreach(var parameter in parameterList.Parameters)
+            foreach (var parameter in parameterList.Parameters)
             {
-#if DEBUG
-                //GeneratorsHelper.ShowSyntaxNode(0, parameter);
-#endif
-
                 var identifierName = parameter.ChildNodes().FirstOrDefault(p => p.IsKind(SyntaxKind.IdentifierName));
 
-                if(identifierName == null)
+                if (identifierName == null)
                 {
                     var genericName = parameter.ChildNodes().FirstOrDefault(p => p.IsKind(SyntaxKind.GenericName));
 
-                    if(genericName == null)
+                    if (genericName == null)
                     {
                         var predefinedType = parameter.ChildNodes().FirstOrDefault(p => p.IsKind(SyntaxKind.PredefinedType));
 
-                        if(predefinedType == null)
+                        if (predefinedType == null)
                         {
                             genericTypeList.Add(string.Empty);
                         }
@@ -241,11 +183,6 @@ namespace SourceGenerator
                     genericTypeList.Add(GeneratorsHelper.ToString(identifierName.GetText()));
                 }
             }
-
-#if DEBUG
-            //FileLogger.WriteLn($"needToAddFuncResultType = {needToAddFuncResultType}");
-            //FileLogger.WriteLn($"funcResultType = '{funcResultType}'");
-#endif
 
             if (needToAddFuncResultType)
             {
