@@ -72,6 +72,28 @@ namespace SymOntoClay.SourceGenerator
 
             var fieldsItems = GetFieldItems(targetClassItem.SyntaxNode);
 
+            var actionKeyName = string.Empty;
+
+            var propertyActionKey = propertyItems.FirstOrDefault(p => p.IsActionKey);
+
+            if(propertyActionKey == null)
+            {
+                var fieldActionKey = fieldsItems.FirstOrDefault(p => p.IsActionKey);
+
+                if(fieldActionKey != null)
+                {
+                    actionKeyName = fieldActionKey.Identifier;
+                }
+            }
+            else
+            {
+                actionKeyName = propertyActionKey.Identifier;
+            }
+
+#if DEBUG
+            FileLogger.WriteLn($"actionKeyName = '{actionKeyName}'");
+#endif
+
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"namespace {targetClassItem.Namespace}.PlainObjects");
             sourceCodeBuilder.AppendLine("{");
@@ -79,10 +101,20 @@ namespace SymOntoClay.SourceGenerator
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}{{");
             foreach (var propertyItem in propertyItems)
             {
+                if (propertyItem.IsActionOrFunc)
+                {
+                    continue;
+                }
+
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public {GetBaseFieldMemberType(propertyItem)} {propertyItem.Identifier} {{ get; set; }}");
             }
             foreach (var fieldItem in fieldsItems)
             {
+                if (fieldItem.IsActionOrFunc)
+                {
+                    continue;
+                }
+
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}public {GetBaseFieldMemberType(fieldItem)} {fieldItem.Identifier};");
             }
             //sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}/// <inheritdoc/>");
@@ -144,10 +176,20 @@ namespace SymOntoClay.SourceGenerator
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
             foreach (var propertyItem in propertyItems)
             {
+                if (propertyItem.IsActionOrFunc)
+                {
+                    continue;
+                }
+
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateWriteProperty(propertyItem)}");
             }
             foreach (var fieldItem in fieldsItems)
             {
+                if (fieldItem.IsActionOrFunc)
+                {
+                    continue;
+                }
+
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateWriteField(fieldItem)}");
             }
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
@@ -159,13 +201,16 @@ namespace SymOntoClay.SourceGenerator
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}private void OnReadPlainObject(PlainObjects.{plainObjectClassName} plainObject, IDeserializer deserializer)");
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}{{");
+
+            var actionIndex = 0;
+
             foreach (var propertyItem in propertyItems)
             {
-                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateReadProperty(propertyItem)}");
+                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateReadProperty(propertyItem, actionKeyName, ref actionIndex)}");
             }
             foreach (var fieldItem in fieldsItems)
             {
-                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateReadField(fieldItem)}");
+                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateReadField(fieldItem, actionKeyName, ref actionIndex)}");
             }
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine();
@@ -230,14 +275,9 @@ namespace SymOntoClay.SourceGenerator
             return sb.ToString();
         }
 
-        private string GetTypeName(FieldItem fieldItem)
+        private string GetTypeName(BaseFieldItem baseFieldItem)
         {
-            return GetTypeName(fieldItem.FieldTypeSyntaxNode);
-        }
-
-        private string GetTypeName(PropertyItem propertyItem)
-        {
-            return GetTypeName(propertyItem.FieldTypeSyntaxNode);
+            return GetTypeName(baseFieldItem.FieldTypeSyntaxNode);
         }
 
         private string GetTypeName(SyntaxNode syntaxNode)
@@ -259,13 +299,13 @@ namespace SymOntoClay.SourceGenerator
             foreach (var propertyDeclaration in propertiesDeclarationsList)
             {
 #if DEBUG
-                GeneratorsHelper.ShowSyntaxNode(0, propertyDeclaration);
+                //GeneratorsHelper.ShowSyntaxNode(0, propertyDeclaration);
 #endif
 
                 var hasNoSerializableMemberAttribute = HasNoSerializableMemberAttribute(propertyDeclaration);
 
 #if DEBUG
-                FileLogger.WriteLn($"hasNoSerializableMemberAttribute = {hasNoSerializableMemberAttribute}");
+                //FileLogger.WriteLn($"hasNoSerializableMemberAttribute = {hasNoSerializableMemberAttribute}");
 #endif
 
                 if(hasNoSerializableMemberAttribute)
@@ -273,10 +313,17 @@ namespace SymOntoClay.SourceGenerator
                     continue;
                 }
 
+                var hasActionKeyAttribute = HasActionKeyAttribute(propertyDeclaration);
+
+#if DEBUG
+                //FileLogger.WriteLn($"hasActionKeyAttribute = {hasActionKeyAttribute}");
+#endif
+
                 var item = new PropertyItem()
                 {
                     ClassDeclarationSyntaxNode = syntaxNode,
-                    SyntaxNode = propertyDeclaration
+                    SyntaxNode = propertyDeclaration,
+                    IsActionKey = hasActionKeyAttribute
                 };
 
                 FillUpBaseFieldItem(propertyDeclaration, item);
@@ -327,13 +374,13 @@ namespace SymOntoClay.SourceGenerator
             foreach (var fieldDeclaration in fieldsDeclarationList)
             {
 #if DEBUG
-                GeneratorsHelper.ShowSyntaxNode(0, fieldDeclaration);
+                //GeneratorsHelper.ShowSyntaxNode(0, fieldDeclaration);
 #endif
 
                 var hasNoSerializableMemberAttribute = HasNoSerializableMemberAttribute(fieldDeclaration);
 
 #if DEBUG
-                FileLogger.WriteLn($"hasNoSerializableMemberAttributes = {hasNoSerializableMemberAttribute}");
+                //FileLogger.WriteLn($"hasNoSerializableMemberAttributes = {hasNoSerializableMemberAttribute}");
 #endif
 
                 if (hasNoSerializableMemberAttribute)
@@ -341,10 +388,17 @@ namespace SymOntoClay.SourceGenerator
                     continue;
                 }
 
+                var hasActionKeyAttribute = HasActionKeyAttribute(fieldDeclaration);
+
+#if DEBUG
+                //FileLogger.WriteLn($"hasActionKeyAttribute = {hasActionKeyAttribute}");
+#endif
+
                 var item = new FieldItem()
                 {
                     ClassDeclarationSyntaxNode = syntaxNode,
-                    SyntaxNode = fieldDeclaration
+                    SyntaxNode = fieldDeclaration,
+                    IsActionKey = hasActionKeyAttribute
                 };
 
                 var variableDeclaration = fieldDeclaration.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclaration));
@@ -360,6 +414,11 @@ namespace SymOntoClay.SourceGenerator
         private bool HasNoSerializableMemberAttribute(SyntaxNode syntaxNode)
         {
             return HasMemberAttribute(syntaxNode, Constants.NoSerializableMemberAttributeName);
+        }
+
+        private bool HasActionKeyAttribute(SyntaxNode syntaxNode)
+        {
+            return HasMemberAttribute(syntaxNode, Constants.SerializableActionKeyAttributeName);
         }
 
         private bool HasMemberAttribute(SyntaxNode syntaxNode, string attributeName)
@@ -410,96 +469,105 @@ namespace SymOntoClay.SourceGenerator
                     baseFieldItem.KindFieldType = KindFieldType.PredefinedType;
                 }
             }
+
+            baseFieldItem.IsActionOrFunc = IsActionOrFunc(baseFieldItem);
+        }
+
+        private bool IsActionOrFunc(BaseFieldItem baseFieldItem)
+        {
+            var typeName = GetTypeName(baseFieldItem).Replace(" ", string.Empty).Trim();
+
+#if DEBUG
+            FileLogger.WriteLn($"typeName = '{typeName}'");
+#endif
+
+            return typeName == "Action" || typeName.StartsWith("Action<") || typeName.StartsWith("Func<");
         }
 
         private string CreateWriteProperty(PropertyItem propertyItem)
         {
-            var propertyIdentifier = propertyItem.Identifier;
-
-            var sb = new StringBuilder("plainObject.");
-            sb.Append(propertyIdentifier);
-            sb.Append(" = ");
-            switch (propertyItem.KindFieldType)
-            {
-                case KindFieldType.PredefinedType:
-                    sb.Append(propertyIdentifier);
-                    break;
-
-                default:
-                    sb.Append($"serializer.GetSerializedObjectPtr({propertyIdentifier})");
-                    break;
-            }
-            sb.Append(";");
-
-            return sb.ToString();
+            return CreateWriteMember(propertyItem);
         }
 
         private string CreateWriteField(FieldItem fieldItem)
         {
-            var fieldIndentifier = fieldItem.Identifier;
+            return CreateWriteMember(fieldItem);
+        }
+
+        private string CreateWriteMember(BaseFieldItem baseFieldItem)
+        {
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, propertyItem.FieldTypeSyntaxNode);
+#endif
+
+            var memberIdentifier = baseFieldItem.Identifier;
 
             var sb = new StringBuilder("plainObject.");
-            sb.Append(fieldIndentifier);
+            sb.Append(memberIdentifier);
             sb.Append(" = ");
-            switch (fieldItem.KindFieldType)
+            switch (baseFieldItem.KindFieldType)
             {
                 case KindFieldType.PredefinedType:
-                    sb.Append(fieldIndentifier);
+                    sb.Append(memberIdentifier);
                     break;
 
                 default:
-                    sb.Append($"serializer.GetSerializedObjectPtr({fieldIndentifier})");
+                    sb.Append($"serializer.GetSerializedObjectPtr({memberIdentifier})");
                     break;
             }
             sb.Append(";");
+
             return sb.ToString();
         }
 
-        private string CreateReadProperty(PropertyItem propertyItem)
+        private string CreateReadProperty(PropertyItem propertyItem, string actionKeyName, ref int actionIndex)
         {
-            var propertyIdentifier = propertyItem.Identifier;
+            return CreateReadMember(propertyItem, actionKeyName, ref actionIndex);
+        }
+
+        private string CreateReadField(FieldItem fieldItem, string actionKeyName, ref int actionIndex)
+        {
+            return CreateReadMember(fieldItem, actionKeyName, ref actionIndex);
+        }
+
+        private string CreateReadMember(BaseFieldItem baseFieldItem, string actionKeyName, ref int actionIndex)
+        {
+#if DEBUG
+            FileLogger.WriteLn($"actionKeyName = '{actionKeyName}'");
+            FileLogger.WriteLn($"actionIndex = {actionIndex}");
+#endif
+
+            var memberIdentifier = baseFieldItem.Identifier;
 
             var sb = new StringBuilder();
-            sb.Append(propertyIdentifier);
+            sb.Append(memberIdentifier);
             sb.Append(" = ");
 
-            switch (propertyItem.KindFieldType)
+            switch (baseFieldItem.KindFieldType)
             {
                 case KindFieldType.PredefinedType:
                     sb.Append("plainObject.");
-                    sb.Append(propertyIdentifier);
+                    sb.Append(memberIdentifier);
                     break;
 
                 default:
                     {
-                        var typeName = GetTypeName(propertyItem);
-                        sb.Append($"deserializer.GetDeserializedObject<{typeName}>(plainObject.{propertyIdentifier})");
-                    }
-                    break;
-            }
-            sb.Append(";");
-            return sb.ToString();
-        }
+                        var typeName = GetTypeName(baseFieldItem);
 
-        private string CreateReadField(FieldItem fieldItem)
-        {
-            var fieldIndentifier = fieldItem.Identifier;
+#if DEBUG
+                        FileLogger.WriteLn($"baseFieldItem.IsActionOrFunc = {baseFieldItem.IsActionOrFunc}");
+                        FileLogger.WriteLn($"typeName = '{typeName}'");
+#endif
 
-            var sb = new StringBuilder();
-            sb.Append(fieldIndentifier);
-            sb.Append(" = ");
+                        if(baseFieldItem.IsActionOrFunc)
+                        {
+                            sb.Append($"deserializer.GetAction<{typeName}>(plainObject.{actionKeyName}, {actionIndex})");
+                            actionIndex++;
 
-            switch (fieldItem.KindFieldType)
-            {
-                case KindFieldType.PredefinedType:
-                    sb.Append("plainObject.");
-                    sb.Append(fieldIndentifier);
-                    break;
+                            break;
+                        }
 
-                default:
-                    {
-                        var typeName = GetTypeName(fieldItem);
-                        sb.Append($"deserializer.GetDeserializedObject<{typeName}>(plainObject.{fieldIndentifier})");
+                        sb.Append($"deserializer.GetDeserializedObject<{typeName}>(plainObject.{memberIdentifier})");
                     }
                     break;
             }

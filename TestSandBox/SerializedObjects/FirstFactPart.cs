@@ -33,7 +33,9 @@
         public int NoSerializedIntField;
 
         [SocSerializableActionKey]
-        public int _id;
+        public string _id;
 
+        public Action _action;
+        public Func<int, int> _func;
     }
 }
