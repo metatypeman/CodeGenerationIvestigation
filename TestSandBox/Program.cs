@@ -1,6 +1,7 @@
 ﻿using NLog;
 using TestSandBox.Serialization;
 using TestSandBox.SerializedObjects;
+using TestSandBox.SerializedObjects.PlainObjects;
 
 namespace TestSandBox
 {

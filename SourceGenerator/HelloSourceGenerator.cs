@@ -62,6 +62,15 @@ namespace SourceGenerator
 
             FileLogger.WriteLn($"items.Count = {items.Count}");
 
+            var plainObjectsRegistry = new PlainObjectsRegistry();
+
+            var plainObjectsSearcher = new PlainObjectsSearcher(context);
+
+            foreach (var item in items)
+            {
+                plainObjectsSearcher.Run(item, plainObjectsRegistry);
+            }
+
             var socSerializationGeneration = new SocSerializationGeneration(context);
 
             foreach (var item in items)
@@ -69,7 +78,7 @@ namespace SourceGenerator
             //    //FileLogger.WriteLn($"item = {item}");
             //    //ShowSyntaxNode(0, item.SyntaxNode);
 
-                socSerializationGeneration.Run(item);
+                socSerializationGeneration.Run(item, plainObjectsRegistry);
             }
 
             // Code generation goes here

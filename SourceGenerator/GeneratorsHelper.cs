@@ -1,15 +1,69 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis;
-using System.Text;
-using System.Linq;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using SourceGenerator;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace SymOntoClay.SourceGenerator
 {
     public static class GeneratorsHelper
     {
+        public static string GetPlainObjectNamespace(string classNamespace)
+        {
+            return $"{classNamespace}.PlainObjects";
+        }
+
+        public static string GetPlainObjectClassIdentifier(ClassDeclarationSyntax syntaxNode)
+        {
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, syntaxNode);
+#endif
+
+            var sb = new StringBuilder(syntaxNode.Identifier.Text);
+            sb.Append("Po");
+
+            var typeParameterList = syntaxNode?.ChildNodes().OfType<TypeParameterListSyntax>().FirstOrDefault();
+
+            if (typeParameterList != null)
+            {
+                sb.Append(ToString(typeParameterList.GetText()).Replace("<", "_").Replace(",", "_").Replace(" ", string.Empty).Replace(">", string.Empty));
+            }
+
+            return sb.ToString();
+        }
+
+        public static string ExtractNamespaceNameFromUsing(string usingContent)
+        {
+            if (string.IsNullOrWhiteSpace(usingContent))
+            {
+                return string.Empty;
+            }
+
+            if (usingContent.Contains("=") ||
+                usingContent.Contains(" static "))
+            {
+                return string.Empty;
+            }
+
+            if (!usingContent.StartsWith("using "))
+            {
+                return string.Empty;
+            }
+
+            return usingContent.Trim().Substring(6).Replace(";", string.Empty).Trim();
+        }
+
+        public static IEnumerable<string> GetAtributeNamesOfClass(SyntaxNode syntaxNode)
+        {
+            return syntaxNode?.ChildNodes()
+                .Where(p => p.IsKind(SyntaxKind.AttributeList))
+                .SelectMany(p => p.ChildNodes().Where(x => x.IsKind(SyntaxKind.Attribute)).SelectMany(y => y.ChildNodes().Where(u => u.IsKind(SyntaxKind.IdentifierName))))
+                .Select(p => ToString(p.GetText())) ?? Enumerable.Empty<string>();
+        }
+
         public static string GetPropertyIdentifier(PropertyItem propertyItem)
         {
             return GetPropertyIdentifier(propertyItem.SyntaxNode);

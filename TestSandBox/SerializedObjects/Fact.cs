@@ -1,7 +1,8 @@
 ﻿namespace TestSandBox.SerializedObjects
 {
     [SocSerialization]
-    public partial class Fact : IDisposable
+    //[SocBasePlainObject("Disposable_T")]
+    public partial class Fact : /*BaseSomeClass,*/ IDisposable
     {
         public Fact()
         {
