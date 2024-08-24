@@ -1,4 +1,5 @@
-﻿using TestSandBox.SerializedObjects.PlainObjects;
+﻿using TestSandBox.Serialization;
+using TestSandBox.SerializedObjects.PlainObjects;
 
 namespace TestSandBox.SerializedObjects
 {

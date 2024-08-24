@@ -1,4 +1,6 @@
-﻿namespace TestSandBox.SerializedObjects
+﻿using TestSandBox.Serialization;
+
+namespace TestSandBox.SerializedObjects
 {
     [SocSerialization]
     //[SocBasePlainObject("Disposable_T")]

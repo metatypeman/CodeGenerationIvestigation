@@ -1,9 +1,20 @@
-﻿namespace TestSandBox.SerializedObjects
+﻿using TestSandBox.Serialization;
+
+namespace TestSandBox.SerializedObjects
 {
     [SocSerialization]
     public partial class FirstFactPart
     {
         public FirstFactPart(int someParam) 
+        {
+        }
+
+        private void SomeMethod()
+        {
+        }
+
+        [SocPostDeserializationMethod]
+        private void AfterDeserializationMethod()
         {
         }
 

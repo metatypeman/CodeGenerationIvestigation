@@ -1,4 +1,6 @@
-﻿namespace TestSandBox.SerializedObjects
+﻿using TestSandBox.Serialization;
+
+namespace TestSandBox.SerializedObjects
 {
     [SocSerialization]
     public partial class SomeGenericClass<T>: object

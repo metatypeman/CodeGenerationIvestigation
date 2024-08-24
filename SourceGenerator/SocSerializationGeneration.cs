@@ -24,11 +24,11 @@ namespace SymOntoClay.SourceGenerator
             var availableNamespaces = targetCompilationUnit.Usings.Select(p => GeneratorsHelper.ExtractNamespaceNameFromUsing(p)).Where(p => !string.IsNullOrWhiteSpace(p)).Distinct().ToList();
 
 #if DEBUG
-            FileLogger.WriteLn($"availableNamespaces.Count = {availableNamespaces.Count}");
-            foreach (var item in availableNamespaces)
-            {
-                FileLogger.WriteLn($"item = {item}");
-            }
+            //FileLogger.WriteLn($"availableNamespaces.Count = {availableNamespaces.Count}");
+            //foreach (var item in availableNamespaces)
+            //{
+            //    FileLogger.WriteLn($"item = {item}");
+            //}
 #endif
 
             var requredNamespaces = new List<string>()
@@ -236,6 +236,12 @@ namespace SymOntoClay.SourceGenerator
 
             var classIdentifier = GetClassIdentifier(targetClassItem.SyntaxNode);
 
+            var postDeserializationMethodName = GetPostDeserializationMethod(targetClassItem.SyntaxNode);
+
+#if DEBUG
+            FileLogger.WriteLn($"postDeserializationMethodName = '{postDeserializationMethodName}'");
+#endif
+
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"namespace {targetClassItem.Namespace}");
             sourceCodeBuilder.AppendLine("{");
@@ -317,6 +323,12 @@ namespace SymOntoClay.SourceGenerator
             {
                 sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{CreateReadField(fieldItem, actionKeyName, ref actionIndex)}");
             }
+
+            if(!string.IsNullOrWhiteSpace(postDeserializationMethodName))
+            {
+                sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentIdentation)}{postDeserializationMethodName}();");
+            }
+
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classContentDeclIdentation)}}}");
             sourceCodeBuilder.AppendLine();
             sourceCodeBuilder.AppendLine($"{GeneratorsHelper.Spaces(classDeclIdentation)}}}");
@@ -337,6 +349,26 @@ namespace SymOntoClay.SourceGenerator
             }
 
             return constructorDeclarations.Any(p => p.ParameterList.Parameters.Count == 0);
+        }
+
+        private string GetPostDeserializationMethod(ClassDeclarationSyntax syntaxNode)
+        {
+            var postDeserializationMethodNode = syntaxNode.
+                ChildNodes()
+                ?.OfType<MethodDeclarationSyntax>()
+                ?.Where(p => p.ChildNodes()?.OfType<AttributeListSyntax>()?.Any(x => x.Attributes.Any(y => GeneratorsHelper.ToString(y.Name.GetText()) == Constants.SocPostDeserializationMethodAttributeName)) ?? false)
+                ?.FirstOrDefault();
+
+#if DEBUG
+            //GeneratorsHelper.ShowSyntaxNode(0, postDeserializationMethodNode);
+#endif
+
+            if(postDeserializationMethodNode == null)
+            {
+                return string.Empty;
+            }
+
+            return postDeserializationMethodNode.Identifier.Text;
         }
 
         private string GetBaseFieldMemberType(BaseFieldItem baseFieldItem)
