@@ -1,4 +1,4 @@
-﻿namespace TestSandBox.SerializedObjects
+﻿namespace TestSandBox.Serialization
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = true)]
     public class SocSerializableAction : Attribute
