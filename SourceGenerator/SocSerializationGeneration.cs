@@ -76,11 +76,11 @@ namespace SymOntoClay.SourceGenerator
                 .ToList();
 
 #if DEBUG
-            FileLogger.WriteLn($"availableNamespacesForClass.Count = {availableNamespacesForClass.Count}");
-            foreach (var item in availableNamespacesForClass)
-            {
-                FileLogger.WriteLn($"item = {item}");
-            }
+            //FileLogger.WriteLn($"availableNamespacesForClass.Count = {availableNamespacesForClass.Count}");
+            //foreach (var item in availableNamespacesForClass)
+            //{
+            //    FileLogger.WriteLn($"item = {item}");
+            //}
 #endif
 
             var identationStep = 4;
@@ -92,19 +92,19 @@ namespace SymOntoClay.SourceGenerator
             var baseTypeInfo = GetBaseTypeInfo(targetClassItem.SyntaxNode);
 
 #if DEBUG
-            FileLogger.WriteLn($"baseTypeInfo = {baseTypeInfo}");
+            //FileLogger.WriteLn($"baseTypeInfo = {baseTypeInfo}");
 #endif
 
             var baseTypeName = baseTypeInfo.TypeName;
 
 #if DEBUG
-            FileLogger.WriteLn($"baseTypeName = '{baseTypeName}'");
+            //FileLogger.WriteLn($"baseTypeName = '{baseTypeName}'");
 #endif
 
             var hasBaseType = !string.IsNullOrWhiteSpace(baseTypeName);
 
 #if DEBUG
-            FileLogger.WriteLn($"hasBaseType = {hasBaseType}");
+            //FileLogger.WriteLn($"hasBaseType = {hasBaseType}");
 #endif
 
             var plainObjectClassName = GeneratorsHelper.GetPlainObjectClassIdentifier(targetClassItem.SyntaxNode);
@@ -138,7 +138,7 @@ namespace SymOntoClay.SourceGenerator
             var memberModifierMark = hasBaseType ? "override" : "virtual";
 
 #if DEBUG
-            FileLogger.WriteLn($"memberModifierMark = '{memberModifierMark}'");
+            //FileLogger.WriteLn($"memberModifierMark = '{memberModifierMark}'");
 #endif
 
             var plainObjectBaseType = string.Empty;
@@ -148,7 +148,7 @@ namespace SymOntoClay.SourceGenerator
                 plainObjectBaseType = GetPlainObjectClassIdentifierFromAttribute(targetClassItem.SyntaxNode);
 
 #if DEBUG
-                FileLogger.WriteLn($"plainObjectBaseType = '{plainObjectBaseType}'");
+                //FileLogger.WriteLn($"plainObjectBaseType = '{plainObjectBaseType}'");
 #endif
 
                 if (string.IsNullOrWhiteSpace(plainObjectBaseType))
@@ -156,20 +156,23 @@ namespace SymOntoClay.SourceGenerator
                     var peparedBaseType = baseTypeName.Contains('<') ? baseTypeName.Substring(0, baseTypeName.IndexOf('<')).Trim() : baseTypeName;
 
 #if DEBUG
-                    FileLogger.WriteLn($"peparedBaseType = '{peparedBaseType}'");
+                    //FileLogger.WriteLn($"peparedBaseType = '{peparedBaseType}'");
 #endif
 
                     plainObjectBaseType = plainObjectsRegistry.Get(availableNamespacesForClass, peparedBaseType, baseTypeInfo.GenericPrametersCount);
 
 #if DEBUG
-                    FileLogger.WriteLn($"plainObjectBaseType (2) = '{plainObjectBaseType}'");
+                    //FileLogger.WriteLn($"plainObjectBaseType (2) = '{plainObjectBaseType}'");
 #endif
 
-                    plainObjectBaseType = GetPlainObjectClassIdentifier(baseTypeName);
+                    if(string.IsNullOrWhiteSpace(plainObjectBaseType))
+                    {
+                        plainObjectBaseType = GetPlainObjectClassIdentifier(baseTypeName);
 
 #if DEBUG
-                    //FileLogger.WriteLn($"plainObjectBaseType (3) = '{plainObjectBaseType}'");
+                        //FileLogger.WriteLn($"plainObjectBaseType (3) = '{plainObjectBaseType}'");
 #endif
+                    }
                 }
             }
 
